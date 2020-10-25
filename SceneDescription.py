@@ -10,91 +10,102 @@ from Prop import Prop
 from Rule import Rule
 
 
-def create_bound_boxes():
-    objects = {}
-    objects[0] = Obj('A', [5, 15], [15, 30])
-    objects[1] = Obj('B', [45, 150], [25, 90])
-    objects[2] = Obj('C', [200, 115], [55, 80])
-    return objects
+#  dane testowe
+def input_data():
+    # data of objects at the beginning
+    def create_bound_boxes():
+        objects = {}
+        objects[0] = Obj('A', [5, 15], [15, 30])
+        objects[1] = Obj('B', [45, 150], [25, 90])
+        objects[2] = Obj('C', [200, 115], [55, 80])
+        return objects
 
+    def create_prop():
+        props = {}
+        # properties left and right
+        props[0] = Prop('left edge', 1, 0.9, 'b_l', 'trapezoid', [-2, -2, -1, -0.85],
+                        ["Przy lewej krawędzi znajduje się ", ". "])
+        props[1] = Prop('left side', 2, 0.8, 'b_l', 'trapezoid', [-10, -0.9, -0.6, 0],
+                        ["W lewej części pola widzimy ", ". "])
+        props[2] = Prop('center left-right', 3, 0.9, 'c_lr', 'trapezoid', [-0.2, -0.05, 0.05, 0.2],
+                        ["Na środku szerokości znajduje się ", ". "])
+        props[3] = Prop('right side', 4, 0.8, 'b_r', 'trapezoid', [0, 0.6, 0.9, 10],
+                        ["W prawej części pola widzimy ", ". "])
+        props[4] = Prop('right edge', 5, 0.9, 'b_r', 'trapezoid', [0.85, 1, 2, 2],
+                        ["Przy prawej krawędzi znajduje się ", ". "])
+        # propertes down and upper
+        props[5] = Prop('top edge', 6, 0.7, 'b_t', 'trapezoid', [-2, -2, -1, -0.85],
+                        ["Przy górnej krawędzi znajduje się ", ". "])
+        props[6] = Prop('upper part', 7, 0.5, 'b_t', 'trapezoid', [-10, -0.9, -0.6, 0],
+                        ["W górnej części pola widzimy ", ". "])
+        props[7] = Prop('center up-down', 8, 0.8, 'c_tb', 'trapezoid', [-0.2, -0.05, 0.05, 0.2],
+                        ["Na środku wysokości znajduje się ", ". "])
+        props[8] = Prop('lower part', 9, 0.5, 'b_b', 'trapezoid', [0, 0.6, 0.9, 10],
+                        ["W dolnej części pola widzimy ", ". "])
+        props[9] = Prop('bottom edge', 10, 0.7, 'b_b', 'trapezoid', [0.85, 1, 2, 2],
+                        ["Przy dolnej krawędzi znajduje się ", ". "])
+        return props
 
-def create_prop():
-    props = {}
-    props[0] = Prop('left edge', 1, 0.9, 'b_l', 'trapezoid', [-2, -2, -1, -0.85],
-                    ["Przy lewej krawędzi znajduje się ", ". "])
-    props[1] = Prop('left side', 2, 0.8, 'b_l', 'trapezoid', [-10, -0.9, -0.6, 0],
-                    ["W lewej części pola widzimy ", ". "])
-    props[2] = Prop('center left-right', 3, 0.9, 'c_lr', 'trapezoid', [-0.2, -0.05, 0.05, 0.2],
-                    ["Na środku szerokości znajduje się ", ". "])
-    props[3] = Prop('right side', 4, 0.8, 'b_r', 'trapezoid', [0, 0.6, 0.9, 10],
-                    ["W prawej części pola widzimy ", ". "])
-    props[4] = Prop('right edge', 5, 0.9, 'b_r', 'trapezoid', [0.85, 1, 2, 2],
-                    ["Przy prawej krawędzi znajduje się ", ". "])
-    props[5] = Prop('top edge', 6, 0.7, 'b_t', 'trapezoid', [-2, -2, -1, -0.85],
-                    ["Przy górnej krawędzi znajduje się ", ". "])
-    props[6] = Prop('upper part', 7, 0.5, 'b_t', 'trapezoid', [-10, -0.9, -0.6, 0],
-                    ["W górnej części pola widzimy ", ". "])
-    props[7] = Prop('center up-down', 8, 0.8, 'c_tb', 'trapezoid', [-0.2, -0.05, 0.05, 0.2],
-                    ["Na środku wysokości znajduje się ", ". "])
-    props[8] = Prop('lower part', 9, 0.5, 'b_b', 'trapezoid', [0, 0.6, 0.9, 10],
-                    ["W dolnej części pola widzimy ", ". "])
-    props[9] = Prop('bottom edge', 10, 0.7, 'b_b', 'trapezoid', [0.85, 1, 2, 2],
-                    ["Przy dolnej krawędzi znajduje się ", ". "])
-    return props
+    # define relations
+    def create_rels():
+        rels = {}
 
+        rels[0] = Prop('on the right', 21, 0.8, 'd_lr', 'trapezoid', [0, 0.01, 0.5, 2],
+                       ["Obiekt ", " znajduje się po prawej stronie obiektu ", ". "])
+        rels[1] = Prop('on the left', 22, 0.8, 'd_lr', 'trapezoid', [-2, -0.5, -0.01, 0],
+                       ["Obiekt ", " znajduje się po lewej stronie obiektu ", ". "])
 
-def create_rels():
-    rels = {}
+        rels[2] = Prop('above', 23, 0.8, 'd_tb', 'trapezoid', [-2, -0.5, -0.01, 0],
+                       ["Obiekt ", " znajduje się powyżej obiektu ", ". "])
 
-    rels[0] = Prop('on the right', 21, 0.8, 'd_lr', 'trapezoid', [0, 0.01, 0.5, 2],
-                   ["Obiekt ", " znajduje się po prawej stronie obiektu ", ". "])
-    rels[1] = Prop('on the left', 22, 0.8, 'd_lr', 'trapezoid', [-2, -0.5, -0.01, 0],
-                   ["Obiekt ", " znajduje się po lewej stronie obiektu ", ". "])
+        rels[3] = Prop('below', 24, 0.8, 'd_tb', 'trapezoid', [0, 0.01, 0.5, 2],
+                       ["Obiekt ", " znajduje się poniżej obiektu ", ". "])
 
-    rels[2] = Prop('above', 23, 0.8, 'd_tb', 'trapezoid', [-2, -0.5, -0.01, 0],
-                   ["Obiekt ", " znajduje się powyżej obiektu ", ". "])
+        return rels
 
-    rels[3] = Prop('below', 24, 0.8, 'd_tb', 'trapezoid', [0, 0.01, 0.5, 2],
-                   ["Obiekt ", " znajduje się poniżej obiektu ", ". "])
+    # define rules
+    def create_rules():
+        rules = {}
+        rules[0] = Rule('center', 41, 1, 3, 8, 'min', ["Obiekt ", " znajduje się na środku pola", ". "])
+        rules[1] = Rule('top left corner', 42, 1, 1, 6, 'min',
+                        ["Obiekt ", " znajduje się w lewym-górnym narożniku pola", ". "])
+        rules[2] = Rule('top right corner', 43, 1, 5, 6, 'min',
+                        ["Obiekt ", " znajduje się w prawym-górnym narożniku pola", ". "])
+        rules[3] = Rule('bottom right corner', 44, 1, 5, 10, 'min',
+                        ["Obiekt ", " w prawym-dolnym narożniku pola", ". "])
+        rules[4] = Rule('bottom left corner', 45, 1, 1, 10, 'min',
+                        ["Obiekt ", " znajduje się w lewym-dolnym narożniku pola", ". "])
+        rules[5] = Rule('top left part', 46, 1, 2, 7, 'min',
+                        ["Obiekt ", " znajduje się w lewej-górnej części pola", ". "])
+        rules[6] = Rule('top right part', 47, 1, 4, 7, 'min',
+                        ["Obiekt ", " znajduje się w prawej-górnej części pola", ". "])
+        rules[7] = Rule('bottom right part', 48, 1, 4, 9, 'min',
+                        ["Obiekt ", " znajduje się w prawej-dolnej części pola", ". "])
+        rules[8] = Rule('bottom left part', 49, 1, 2, 9, 'min',
+                        ["Obiekt ", " znajduje się w lewej-dolnej części pola", ". "])
+        return rules
 
-    return rels
+    # predefined field size
+    def get_field_size():
+        return [400, 400]
 
+    return create_bound_boxes(), create_prop(), create_rels(), create_rules(), get_field_size()
 
-def create_rules():
-    rules = {}
-    rules[0] = Rule('center', 41, 1, 3, 8, 'min', ["Obiekt ", " znajduje się na środku pola", ". "])
-    rules[1] = Rule('top left corner', 42, 1, 1, 6, 'min',
-                    ["Obiekt ", " znajduje się w lewym-górnym narożniku pola", ". "])
-    rules[2] = Rule('top right corner', 43, 1, 5, 6, 'min',
-                    ["Obiekt ", " znajduje się w prawym-górnym narożniku pola", ". "])
-    rules[3] = Rule('bottom right corner', 44, 1, 5, 10, 'min', ["Obiekt ", " w prawym-dolnym narożniku pola", ". "])
-    rules[4] = Rule('bottom left corner', 45, 1, 1, 10, 'min',
-                    ["Obiekt ", " znajduje się w lewym-dolnym narożniku pola", ". "])
-    rules[5] = Rule('top left part', 46, 1, 2, 7, 'min', ["Obiekt ", " znajduje się w lewej-górnej części pola", ". "])
-    rules[6] = Rule('top right part', 47, 1, 4, 7, 'min',
-                    ["Obiekt ", " znajduje się w prawej-górnej części pola", ". "])
-    rules[7] = Rule('bottom right part', 48, 1, 4, 9, 'min',
-                    ["Obiekt ", " znajduje się w prawej-dolnej części pola", ". "])
-    rules[8] = Rule('bottom left part', 49, 1, 2, 9, 'min',
-                    ["Obiekt ", " znajduje się w lewej-dolnej części pola", ". "])
-    return rules
-
-
-def get_field_size():
-    return [400, 400]
-
-
-def scene_description(obj, field_size):
+# generate description
+def scene_description(create_bound_boxes, create_prop, create_rels, create_rules, get_field_size):
     # generowanie opisu sceny
-    # wyznaczamy względne współrzędne obiektów
-    obj_data = get_relpos(obj, field_size)
-    pred = get_predicates(obj_data, create_prop(), create_rels())
-    rule_pred = add_rule_predicates(obj_data, pred, create_rules())
+    # create relative positions of obiektów
+    obj_data = get_relpos(create_bound_boxes, get_field_size)
+    pred = get_predicates(obj_data, create_prop, create_rels)
+    # create predicated based on rules
+    rule_pred = add_rule_predicates(obj_data, pred, create_rules)
+    # select correct predicated
     pred_sel = select_predicates(obj_data, pred + rule_pred, 1)
-    description = get_description(obj, pred_sel, create_prop(), create_rels(), create_rules())
+    # generate description from selected predicated
+    description = get_description(create_bound_boxes, pred_sel, create_prop, create_rels, create_rules)
     return description
 
-
+# create relative position of objects
 def get_relpos(obj, field_size):
     num = len(obj)
     left = []
@@ -105,6 +116,7 @@ def get_relpos(obj, field_size):
     vert_len = []
     size = []
     for i in range(num):
+        # check if object left position trend is 1 not -1
         left.append(2 * obj[i].pos[1] / field_size[1] - 1)
         right.append(2 * (obj[i].pos[1] + obj[i].length[1]) / field_size[1] - 1)
         horiz_len.append(obj[i].length[1] / field_size[1])
@@ -117,25 +129,38 @@ def get_relpos(obj, field_size):
     return obj_data
 
 
+# return argument of memebership function
+# ob_data - matrix of bounding boxes data
+# pr - seetings or relation of
+#
 def get_mfarg(ob_data, pr, ob_num1, ob_num2):
     out = [0]
+    # left borde of bound_box
     if (pr.farg == 'b_l'):
         out = ob_data.left
+    # right border of bound_box
     elif (pr.farg == 'b_r'):
         out = ob_data.right
+    #     centroid of left-right bound_box
     elif (pr.farg == 'c_lr'):
         out = (numpy.array(ob_data.left) + numpy.array(ob_data.right)) / 2
+    # top border of bound_box
     elif (pr.farg == 'b_t'):
         out = ob_data.up
+    # bottom border of bound_box
     elif (pr.farg == 'b_b'):
         out = ob_data.down
+    # centroid top-bottom
     elif (pr.farg == 'c_ud'):
         out = (numpy.array(ob_data.up) + numpy.array(ob_data.down)) / 2
+    # distance betwen centroids left-right
     elif (pr.farg == 'd_lr'):
         out = [(ob_data.right[ob_num1] + ob_data.left[ob_num1]) / 2 - (
                 ob_data.right[ob_num2] + ob_data.left[ob_num2]) / 2]
+    # distance between centroids top-bottom
     elif (pr.farg == 'd_tb'):
         out = [(ob_data.up[ob_num1] + ob_data.down[ob_num1]) / 2 - (ob_data.up[ob_num2] + ob_data.down[ob_num2]) / 2]
+    # Euclidean distance between centroids
     elif (pr.farg == 'd'):
         dist_ud = (ob_data.up[ob_num1] + ob_data.down[ob_num1]) / 2 - (ob_data.up[ob_num2] + ob_data.down[ob_num2]) / 2
         dist_lr = (ob_data.right[ob_num1] + ob_data.left[ob_num1]) / 2 - (
@@ -143,7 +168,7 @@ def get_mfarg(ob_data, pr, ob_num1, ob_num2):
         out = [sqrt(dist_ud * dist_ud + dist_lr * dist_lr)]
     return out
 
-
+# trapezoid membership function
 def tmf(in_arg, ftype, fval):
     import copy
     out = copy.copy(in_arg)
@@ -163,10 +188,12 @@ def tmf(in_arg, ftype, fval):
         print('wrong membership function type')
     return out
 
-
+# generate values of fuzzy descriptors position per  properties
+# vector of values per which we are counting values of descriptior values
 def get_properties(ob_data, prop):
     obj_prop = []
     max = 1
+    # property number
     for i in range(len(prop)):
         a = tmf(get_mfarg(ob_data, prop[i], 0, 0), prop[i].ftype, prop[i].fthr)
         if len(a) > max:
@@ -179,28 +206,47 @@ def get_properties(ob_data, prop):
 
 
 def get_predicates(obj_data, prop, rel):
+    # generate predicated per properties and relations
+    # saliency of objects that is proportional to size of object
     sal = obj_data.size
+    # count values of prperties confidence factor
     obj_prop = get_properties(obj_data, prop)
+    # count values of realations confidence factor
     obj_rel = get_relations(obj_data, rel)
+    # generate predicates
     counter = 0
     pred = []
+    # iterate over object reference number
     for i in range(obj_data.num):
+        # properties
         for j in range(len(prop)):
+            # values of membership fuction
             if obj_prop[j][i] > 0:
                 temp = []
+                # predicate id from property
                 temp.append(prop[j].id)
+                # confidence factor
                 temp.append(obj_prop[j][i] * sal[i] * prop[j].psal)
+                # usage pointer
                 temp.append(0)
+                # number of referencje object
                 temp.append(i)
+                # not use with properties
                 temp.append(-1)
+                # property number
                 temp.append(j)
+                # used in rules
                 temp.append(obj_prop[j][i])
                 pred.append(temp)
                 counter += 1
+        # realtions
+        # iterate over objects, which  i objects is in relation
         for k in range(obj_data.num):
+            # iterate over relation number
             for j in range(len(rel)):
                 if obj_rel[j, i, k] > 0:
                     temp = []
+                    #
                     temp.append(rel[j].id)
                     temp.append(obj_rel[j, i, k] * sal[i] * rel[j].psal)
                     temp.append(0)
@@ -309,11 +355,9 @@ def show_image(imf):
     plt.show()
 
 
-description = scene_description(create_bound_boxes(), get_field_size())
-print(description)
-imf = draw_field(create_bound_boxes(), get_field_size(), -1, 1)
-show_image(imf)
-a= imf[0]
-b= imf[1]
-c= imf[2]
-print('test')
+def create_output_image_and_desc():
+    create_bound_boxes, create_prop, create_rels, create_rules, get_field_size = input_data()
+    description = scene_description(create_bound_boxes, create_prop, create_rels, create_rules, get_field_size)
+    print(description)
+    imf = draw_field(create_bound_boxes, get_field_size, -1, 1)
+    show_image(imf)
