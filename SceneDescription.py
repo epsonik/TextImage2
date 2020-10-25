@@ -91,6 +91,7 @@ def input_data():
 
     return create_bound_boxes(), create_prop(), create_rels(), create_rules(), get_field_size()
 
+
 # generate description
 def scene_description(create_bound_boxes, create_prop, create_rels, create_rules, get_field_size):
     # generowanie opisu sceny
@@ -104,6 +105,7 @@ def scene_description(create_bound_boxes, create_prop, create_rels, create_rules
     # generate description from selected predicated
     description = get_description(create_bound_boxes, pred_sel, create_prop, create_rels, create_rules)
     return description
+
 
 # create relative position of objects
 def get_relpos(obj, field_size):
@@ -168,6 +170,7 @@ def get_mfarg(ob_data, pr, ob_num1, ob_num2):
         out = [sqrt(dist_ud * dist_ud + dist_lr * dist_lr)]
     return out
 
+
 # trapezoid membership function
 def tmf(in_arg, ftype, fval):
     import copy
@@ -187,6 +190,7 @@ def tmf(in_arg, ftype, fval):
     else:
         print('wrong membership function type')
     return out
+
 
 # generate values of fuzzy descriptors position per  properties
 # vector of values per which we are counting values of descriptior values
@@ -246,13 +250,19 @@ def get_predicates(obj_data, prop, rel):
             for j in range(len(rel)):
                 if obj_rel[j, i, k] > 0:
                     temp = []
-                    #
+                    # predicate id from relation
                     temp.append(rel[j].id)
+                    # confidence factor
                     temp.append(obj_rel[j, i, k] * sal[i] * rel[j].psal)
+                    # usage pointer
                     temp.append(0)
+                    # number of referencje object
                     temp.append(i)
+                    # number of second object from relation
                     temp.append(k)
+                    # relation number
                     temp.append(j)
+                    # used in rules
                     temp.append(obj_rel[j, i, k])
                     pred.append(temp)
                     counter = counter + 1
@@ -260,6 +270,7 @@ def get_predicates(obj_data, prop, rel):
     return pred
 
 
+# generate values od fuzzy descriptors position per relations
 def get_relations(ob_data, rel):
     import numpy
     obj_rel = numpy.ones((len(rel), ob_data.num, ob_data.num))
@@ -272,31 +283,48 @@ def get_relations(ob_data, rel):
     return obj_rel
 
 
+#  add predicates  from rules - inference
 def add_rule_predicates(obj_data, pred, rule):
+    # saliency of objects proportional to relative length
     sal = obj_data.size
     counter = 0
     rule_pred = []
+    # iterate over rules
     for i in range(len(rule)):
+        # iterate over predicates
         for j in range(len(pred)):
+            # found predicate with first premise
             if (pred[j][0] == rule[i].id_first):
+                # save object number
                 obj_found = pred[j][3]
+                # iterate over predicates - look for second premise
                 for k in range(len(pred)):
                     if ((pred[k][0] == rule[i].id_second) and (pred[k][3] == obj_found)):
+                        # second second premise for the same object
                         if ((pred[j][6] != 0) and (pred[k][6] != 0)):
+                            # if is not equal to 0, calculates new predicate
                             ruleobj_cf = combine_mf(pred[j][6], pred[k][6], rule[i].operator)
                             temp = []
+                            # predicate id from rules
                             temp.append(rule[i].id)
+                            # confidence factor
                             temp.append(ruleobj_cf * sal[obj_found] * rule[i].psal)
+                            # usage pointer
                             temp.append(0)
+                            # object number
                             temp.append(obj_found)
+                            # lack of second object(rule)
                             temp.append(-2)
+                            # rule number
                             temp.append(i)
+                            #
                             temp.append(ruleobj_cf)
                             rule_pred.append(temp)
                             counter = counter + 1
     return rule_pred
 
 
+# cobination of two values of membership function(used in rules)
 def combine_mf(val1, val2, type):
     out = 0
     if type == 'min':
@@ -308,40 +336,54 @@ def combine_mf(val1, val2, type):
     return out
 
 
+# select most important predicates
+# num_times - how often object is mentioned in the text
 def select_predicates(obj_data, pred, num_times):
+    # sort by certainty factor of predicate
     def myFunc(e):
         return e[1]
 
     pred.sort(key=myFunc, reverse=True)
     pred_out = []
+    # select most improtant predicates
     used = numpy.zeros((obj_data.num))
     for i in range(len(pred)):
+        # properties or rules
         if pred[i][4] < 0:
             if used[pred[i][3]] < num_times:
                 used[pred[i][3]] = used[pred[i][3]] + 1
                 pred[i][2] = 1
+        # pred(i,5) > 0 -> relation
         else:
+            # second object in relation should used previously
             if (used[pred[i][3]] < num_times) & (used[pred[i][3]] == 1):
                 used[pred[i][3]] = used[pred[i][3]] + 1
                 pred[i][2] = 1
     A = pd.DataFrame(numpy.array(pred))
-    t = A[1].apply(lambda x: True if x > 0 else False)
-    c = A[2].apply(lambda x: True if x == 1 else False)
 
-    filter = numpy.logical_and(t, c)
-    pred_out = A[filter]
+    # reduce predicate matrix to the most important ones
+    def most_important_predicates_filter():
+        t = A[1].apply(lambda x: True if x > 0 else False)
+        c = A[2].apply(lambda x: True if x == 1 else False)
+        filter = numpy.logical_and(t, c)
+        return filter
+
+    pred_out = A[most_important_predicates_filter()]
     return pred_out.to_numpy()
 
 
+# generate decription from the matrix with most important predicates
 def get_description(obj, pred, prop, rel, rule):
     desc = []
     for i in range(len(pred)):
+        # property
         if (pred[i][4] == -1):
             zdanie = prop[pred[i][5]].text[0] + obj[pred[i][3]].name + prop[pred[i][5]].text[1]
             desc.append(zdanie)
         elif (pred[i][4] == -2):
             zdanie = rule[pred[i][5]].text[0] + obj[pred[i][3]].name + rule[pred[i][5]].text[1]
             desc.append(zdanie)
+        # relation
         else:
             zdanie = rel[pred[i][5]].text[0] + obj[pred[i][3]].name + rel[pred[i][5]].text[1] + obj[pred(i, 5)].name, \
                      rel[pred[i][5]].text[2]
@@ -349,6 +391,7 @@ def get_description(obj, pred, prop, rel, rule):
     return desc
 
 
+# plot image
 def show_image(imf):
     import matplotlib.pyplot as plt
     plt.imshow(imf[2])
