@@ -372,6 +372,10 @@ def select_predicates(obj_data, pred, num_times):
     return pred_out.to_numpy()
 
 
+
+
+
+
 # generate decription from the matrix with most important predicates
 def get_description(obj, pred, prop, rel, rule):
     desc = []

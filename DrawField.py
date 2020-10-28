@@ -23,6 +23,9 @@ def draw_field(obj, field_size, active_obj, grid):
             f = im +im_curr_obj
             im2 = numpy.where((f > 1), 1, e)
 
+
+
+
     imout[0] = im2
     imout[1] = im
     imout[2] = im2
