@@ -3,6 +3,8 @@ class Obj():
         self.name = name
         self.pos = pos
         self.length = length
+
+
 class ObjData():
     def __init__(self, num=0, left=None, right=None, horiz_len=None, up=None, down=None, vert_len=None, size=None):
         if size is None:
