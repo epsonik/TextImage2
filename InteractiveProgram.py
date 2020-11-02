@@ -3,15 +3,13 @@ import cv2
 import numpy as np
 
 from DrawField import draw_field
-from InputData import input_data
+from InputData import input_data, get_field_size
 from Obj import Obj
 from SceneDescription import scene_description, show_image
 
 
-def _interactive_mode(image_path):
-    image = cv2.imread(image_path)
-    img_h, image_w, channels = image.shape
-
+def _interactive_mode():
+    image = np.zeros((get_field_size()[0], get_field_size()[1], 3), np.uint8)
     def show_rectangles():
         for index, ref_point in enumerate(ref_points):
             rec = cv2.rectangle(image, ref_point[0], ref_point[1], ref_point[2], 2)
@@ -149,12 +147,12 @@ def _interactive_mode(image_path):
             show_rectangles()
         elif key == ord("y"):
             if ref_points.__len__() > 1:
-                _calculate_pos(ref_points, image_w, img_h)
+                _calculate_pos(ref_points)
     # close all open windows
     cv2.destroyAllWindows()
 
 
-def _calculate_pos(ref_points, image_w, image_h):
+def _calculate_pos(ref_points):
     v_boxes = {}
     for index, ref_point in enumerate(ref_points):
         XtopLeft, YtopLeft = ref_point[0][0], ref_point[0][1]
@@ -180,4 +178,4 @@ def create_output_image_and_desc():
     show_image(imf)
 
 
-_interactive_mode("bicycle_boxed.jpg")
+_interactive_mode()
