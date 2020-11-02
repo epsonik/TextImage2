@@ -170,7 +170,7 @@ def save_b_boxes(ref_points):
         name = index
         XtopLeft, YtopLeft = ref_point[0][0], ref_point[0][1]
         XbottomRight, YbottomRight = ref_point[1][0], ref_point[1][1]
-        w.writerow([name, XtopLeft, YtopLeft, XbottomRight, YbottomRight])
+        w.writerow([name, XtopLeft, YtopLeft, XbottomRight, YbottomRight, ref_point[2]])
 
 
 def _calculate_pos(ref_points):

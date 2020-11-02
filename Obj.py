@@ -29,4 +29,3 @@ class ObjData():
         self.down = down
         self.vert_len = vert_len
         self.size = size
-
