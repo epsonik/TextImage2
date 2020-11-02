@@ -37,8 +37,8 @@ def load_from_file(bound_boxes, readCSV, file_name):
     create_bound_boxes, create_prop, create_rels, create_rules, get_field_size = input_data()
     description = scene_description(bound_boxes, create_prop, create_rels, create_rules, get_field_size)
     print(description)
-    show_rectangles(readCSV)
     save_desc_to_file(description, file_name)
+    show_rectangles(readCSV)
 
 
 # file_name = input("Enter a file name to load bBoxes. Data must be delimited with ',': ")
@@ -46,7 +46,7 @@ def load_from_file(bound_boxes, readCSV, file_name):
 #
 # # Prints in the console the variable as requested
 # print("The file name you entered is: ", file_name)
-file_name = "test.csv"
+file_name = "test3.csv"
 v_boxes = {}
 v_boxes_temp = []
 with open(file_name) as csvfile:
