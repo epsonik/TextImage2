@@ -1,4 +1,6 @@
 # import the necessary packages
+import csv
+
 import cv2
 import numpy as np
 
@@ -10,6 +12,7 @@ from SceneDescription import scene_description, show_image
 
 def _interactive_mode():
     image = np.zeros((get_field_size()[0], get_field_size()[1], 3), np.uint8)
+
     def show_rectangles():
         for index, ref_point in enumerate(ref_points):
             rec = cv2.rectangle(image, ref_point[0], ref_point[1], ref_point[2], 2)
@@ -145,11 +148,29 @@ def _interactive_mode():
             # draw a rectangle around the region of interest
             image = clone.copy()
             show_rectangles()
+        elif key == ord("g"):
+            save_b_boxes(ref_points)
+            show_rectangles()
         elif key == ord("y"):
             if ref_points.__len__() > 1:
                 _calculate_pos(ref_points)
     # close all open windows
     cv2.destroyAllWindows()
+
+
+def save_b_boxes(ref_points):
+    file_name = input("Enter a file to save bounding boxes: ")
+    file_name = str(file_name)
+
+    # Prints in the console the variable as requested
+    print("The file name you entered is: ", file_name)
+    w = csv.writer(open(file_name, "w"))
+
+    for index, ref_point in enumerate(ref_points):
+        name = index
+        XtopLeft, YtopLeft = ref_point[0][0], ref_point[0][1]
+        XbottomRight, YbottomRight = ref_point[1][0], ref_point[1][1]
+        w.writerow([name, XtopLeft, YtopLeft, XbottomRight, YbottomRight])
 
 
 def _calculate_pos(ref_points):
