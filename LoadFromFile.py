@@ -11,7 +11,8 @@ image = np.zeros((get_field_size()[0], get_field_size()[1], 3), np.uint8)
 
 
 def save_desc_to_file(description, file_name):
-    w = csv.writer(open(file_name, "a+"))
+    file_name=file_name.replace('.csv','_description.csv')
+    w = csv.writer(open(file_name, "w"))
     w.writerow(description)
 
 
