@@ -31,6 +31,8 @@ def show_rectangles(bound_boxes):
         # press 'r' to reset the window
         # if the 'c' key is pressed, break from the loop
         cv2.imshow("image", image)
+        if key == ord("c"):
+            break
 
 
 def load_from_file(bound_boxes, readCSV, file_name):
