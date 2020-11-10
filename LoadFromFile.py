@@ -41,12 +41,11 @@ def load_from_file(bound_boxes, readCSV, file_name):
     show_rectangles(readCSV)
 
 
-# file_name = input("Enter a file name to load bBoxes. Data must be delimited with ',': ")
-# file_name = str(file_name)
-#
-# # Prints in the console the variable as requested
-# print("The file name you entered is: ", file_name)
-file_name = "test3.csv"
+file_name = input("Enter a file name to load bBoxes. Data must be delimited with ',': ")
+file_name = str(file_name)
+
+# Prints in the console the variable as requested
+print("The file name you entered is: ", file_name)
 v_boxes = {}
 v_boxes_temp = []
 with open(file_name) as csvfile:
