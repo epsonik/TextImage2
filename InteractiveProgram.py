@@ -22,6 +22,8 @@ def _interactive_mode():
             x, y = ref_point[0]
             cv2.putText(rec, str(index), (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, ref_point[2], 1)
         cv2.imshow("image", image)
+        if ref_points.__len__() > 1:
+            _calculate_pos(ref_points)
 
     def adj_x(corner):
         corner_l = list(corner)
@@ -84,7 +86,7 @@ def _interactive_mode():
             actual_rectangle = ref_points[-1]
             actual_rectangle_idx = len(ref_points) - 1
             image = clone.copy()
-        # draw a rectangle around the region of interest
+            # draw a rectangle around the region of interest
             show_rectangles()
         elif key == ord("d"):
             ref_points[actual_rectangle_idx] = actual_rectangle
@@ -191,10 +193,8 @@ def _calculate_pos(ref_points):
 
         v_boxes[index] = obj
     create_bound_boxes, create_prop, create_rels, create_rules, get_field_size = input_data()
-
     description = scene_description(v_boxes, create_prop, create_rels, create_rules, get_field_size)
     print(description)
-    print("Area method")
 
 
 def create_output_image_and_desc():
