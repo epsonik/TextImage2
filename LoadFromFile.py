@@ -11,7 +11,7 @@ image = np.zeros((get_field_size()[0], get_field_size()[1], 3), np.uint8)
 
 
 def save_desc_to_file(description, file_name):
-    file_name=file_name.replace('.csv','_description.csv')
+    file_name = file_name.replace('.csv', '_description.csv')
     w = csv.writer(open(file_name, "w"))
     w.writerow(description)
 
@@ -54,12 +54,13 @@ v_boxes_temp = []
 with open(file_name) as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
     for b_box in readCSV:
-        name = b_box[0]
-        v_boxes_temp.append(b_box)
-        XtopLeft, YtopLeft = int(b_box[1]), int(b_box[2])
-        XbottomRight, YbottomRight = int(b_box[3]), int(b_box[4])
-        X_len = abs(XbottomRight - XtopLeft)
-        Y_len = abs(YbottomRight - YtopLeft)
-        obj = Obj(name, [YtopLeft, XtopLeft], [Y_len, X_len])
-        v_boxes[int(name)] = obj
+        if len(b_box) > 0:
+            name = b_box[0]
+            v_boxes_temp.append(b_box)
+            XtopLeft, YtopLeft = int(b_box[1]), int(b_box[2])
+            XbottomRight, YbottomRight = int(b_box[3]), int(b_box[4])
+            X_len = abs(XbottomRight - XtopLeft)
+            Y_len = abs(YbottomRight - YtopLeft)
+            obj = Obj(name, [YtopLeft, XtopLeft], [Y_len, X_len])
+            v_boxes[int(name)] = obj
 load_from_file(v_boxes, v_boxes_temp, file_name)
