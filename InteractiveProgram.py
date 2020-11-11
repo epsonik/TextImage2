@@ -57,22 +57,24 @@ def _interactive_mode():
         # if the 'c' key is pressed, break from the loop
         elif key == ord("c"):
             break
-        elif key == ord("0"):
-            actual_rectangle = ref_points[0]
-            actual_rectangle_idx = 0
-            print("You chose rectangle number 0.")
-        elif key == ord("1"):
-            actual_rectangle = ref_points[1]
-            actual_rectangle_idx = 1
-            print("You chose rectangle number 1.")
-        elif key == ord("2"):
-            actual_rectangle = ref_points[2]
-            actual_rectangle_idx = 2
-            print("You chose rectangle number 2.")
-        elif key == ord("3"):
-            actual_rectangle = ref_points[3]
-            actual_rectangle_idx = 3
-            print("You chose rectangle number 3.")
+        elif key == ord("-"):
+            actual_rectangle_idx -= 1
+            if (actual_rectangle_idx < 0):
+                actual_rectangle_idx = len(ref_points) - 1
+            actual_rectangle = ref_points[actual_rectangle_idx]
+            image = clone.copy()
+            # draw a rectangle around the region of interest
+            show_rectangles()
+            print("You chose rectangle number ", actual_rectangle_idx)
+        elif key == ord("+"):
+            actual_rectangle_idx += 1
+            if actual_rectangle_idx > (len(ref_points) - 1):
+                actual_rectangle_idx = 0
+            actual_rectangle = ref_points[actual_rectangle_idx]
+            image = clone.copy()
+            # draw a rectangle around the region of interest
+            show_rectangles()
+            print("You chose rectangle number ", actual_rectangle_idx)
         elif key == ord("n"):
             color = list(np.random.random(size=3) * 256)
             ref_points.append([(80, 80), (110, 110), color])
