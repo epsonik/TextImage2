@@ -15,9 +15,12 @@ def _interactive_mode():
 
     def show_rectangles():
         for index, ref_point in enumerate(ref_points):
-            rec = cv2.rectangle(image, ref_point[0], ref_point[1], ref_point[2], 2)
+            thickness = 2
+            if actual_rectangle_idx == index:
+                thickness = -1
+            rec = cv2.rectangle(image, ref_point[0], ref_point[1], ref_point[2], thickness)
             x, y = ref_point[0]
-            cv2.putText(rec, str(index), (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, ref_point[2], 2)
+            cv2.putText(rec, str(index), (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, ref_point[2], 1)
         cv2.imshow("image", image)
 
     def adj_x(corner):
@@ -80,7 +83,8 @@ def _interactive_mode():
             ref_points.append([(80, 80), (110, 110), color])
             actual_rectangle = ref_points[-1]
             actual_rectangle_idx = len(ref_points) - 1
-            # draw a rectangle around the region of interest
+            image = clone.copy()
+        # draw a rectangle around the region of interest
             show_rectangles()
         elif key == ord("d"):
             ref_points[actual_rectangle_idx] = actual_rectangle
