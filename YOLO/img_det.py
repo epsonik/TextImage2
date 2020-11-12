@@ -1,23 +1,28 @@
 # load yolov3 model and perform object detection
 # based on https://github.com/experiencor/keras-yolo3
+import os
+
 import numpy as np
-from numpy import expand_dims
 from keras.models import load_model
-from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
+from keras.preprocessing.image import load_img
 from matplotlib import pyplot
 from matplotlib.patches import Rectangle
+from numpy import expand_dims
 
-from bound_box import BoundBox
+from YOLO.bound_box import BoundBox
 
-labels = data = [line.strip() for line in open("yolov3.txt", 'r')]
+data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "yolov3.txt")
+labels = data = [line.strip() for line in open(data_path, 'r')]
 
 
 def get_labels():
     return labels
 
+
 def _sigmoid(x):
     return 1. / (1. + np.exp(-x))
+
 
 def decode_netout(netout, anchors, obj_thresh, net_h, net_w):
     grid_h, grid_w = netout.shape[:2]
@@ -25,39 +30,41 @@ def decode_netout(netout, anchors, obj_thresh, net_h, net_w):
     netout = netout.reshape((grid_h, grid_w, nb_box, -1))
     nb_class = netout.shape[-1] - 5
     boxes = []
-    netout[..., :2]  = _sigmoid(netout[..., :2])
-    netout[..., 4:]  = _sigmoid(netout[..., 4:])
-    netout[..., 5:]  = netout[..., 4][..., np.newaxis] * netout[..., 5:]
+    netout[..., :2] = _sigmoid(netout[..., :2])
+    netout[..., 4:] = _sigmoid(netout[..., 4:])
+    netout[..., 5:] = netout[..., 4][..., np.newaxis] * netout[..., 5:]
     netout[..., 5:] *= netout[..., 5:] > obj_thresh
 
-    for i in range(grid_h*grid_w):
+    for i in range(grid_h * grid_w):
         row = i / grid_w
         col = i % grid_w
         for b in range(nb_box):
             # 4th element is objectness score
             objectness = netout[int(row)][int(col)][b][4]
-            if(objectness.all() <= obj_thresh): continue
+            if (objectness.all() <= obj_thresh): continue
             # first 4 elements are x, y, w, and h
             x, y, w, h = netout[int(row)][int(col)][b][:4]
-            x = (col + x) / grid_w # center position, unit: image width
-            y = (row + y) / grid_h # center position, unit: image height
-            w = anchors[2 * b + 0] * np.exp(w) / net_w # unit: image width
-            h = anchors[2 * b + 1] * np.exp(h) / net_h # unit: image height
+            x = (col + x) / grid_w  # center position, unit: image width
+            y = (row + y) / grid_h  # center position, unit: image height
+            w = anchors[2 * b + 0] * np.exp(w) / net_w  # unit: image width
+            h = anchors[2 * b + 1] * np.exp(h) / net_h  # unit: image height
             # last elements are class probabilities
             classes = netout[int(row)][col][b][5:]
-            box = BoundBox(x-w/2, y-h/2, x+w/2, y+h/2, objectness, classes)
+            box = BoundBox(x - w / 2, y - h / 2, x + w / 2, y + h / 2, objectness, classes)
             boxes.append(box)
     return boxes
+
 
 def correct_yolo_boxes(boxes, image_h, image_w, net_h, net_w):
     new_w, new_h = net_w, net_h
     for i in range(len(boxes)):
-        x_offset, x_scale = (net_w - new_w)/2./net_w, float(new_w)/net_w
-        y_offset, y_scale = (net_h - new_h)/2./net_h, float(new_h)/net_h
+        x_offset, x_scale = (net_w - new_w) / 2. / net_w, float(new_w) / net_w
+        y_offset, y_scale = (net_h - new_h) / 2. / net_h, float(new_h) / net_h
         boxes[i].XtopLeft = int((boxes[i].XtopLeft - x_offset) / x_scale * image_w)
         boxes[i].XbottomRight = int((boxes[i].XbottomRight - x_offset) / x_scale * image_w)
         boxes[i].YtopLeft = int((boxes[i].YtopLeft - y_offset) / y_scale * image_h)
         boxes[i].YbottomRight = int((boxes[i].YbottomRight - y_offset) / y_scale * image_h)
+
 
 def _interval_overlap(interval_a, interval_b):
     x1, x2 = interval_a
@@ -66,21 +73,23 @@ def _interval_overlap(interval_a, interval_b):
         if x4 < x1:
             return 0
         else:
-            return min(x2,x4) - x1
+            return min(x2, x4) - x1
     else:
         if x2 < x3:
             return 0
         else:
-            return min(x2,x4) - x3
+            return min(x2, x4) - x3
+
 
 def bbox_iou(box1, box2):
     intersect_w = _interval_overlap([box1.XtopLeft, box1.XbottomRight], [box2.XtopLeft, box2.XbottomRight])
     intersect_h = _interval_overlap([box1.YtopLeft, box1.YbottomRight], [box2.YtopLeft, box2.YbottomRight])
     intersect = intersect_w * intersect_h
-    w1, h1 = box1.XbottomRight-box1.XtopLeft, box1.YbottomRight-box1.YtopLeft
-    w2, h2 = box2.XbottomRight-box2.XtopLeft, box2.YbottomRight-box2.YtopLeft
-    union = w1*h1 + w2*h2 - intersect
+    w1, h1 = box1.XbottomRight - box1.XtopLeft, box1.YbottomRight - box1.YtopLeft
+    w2, h2 = box2.XbottomRight - box2.XtopLeft, box2.YbottomRight - box2.YtopLeft
+    union = w1 * h1 + w2 * h2 - intersect
     return float(intersect) / union
+
 
 def do_nms(boxes, nms_thresh):
     if len(boxes) > 0:
@@ -92,10 +101,11 @@ def do_nms(boxes, nms_thresh):
         for i in range(len(sorted_indices)):
             index_i = sorted_indices[i]
             if boxes[index_i].classes[c] == 0: continue
-            for j in range(i+1, len(sorted_indices)):
+            for j in range(i + 1, len(sorted_indices)):
                 index_j = sorted_indices[j]
                 if bbox_iou(boxes[index_i], boxes[index_j]) >= nms_thresh:
                     boxes[index_j].classes[c] = 0
+
 
 # load and prepare an image
 def load_image_pixels(filename, shape):
@@ -113,6 +123,7 @@ def load_image_pixels(filename, shape):
     image = expand_dims(image, 0)
     return image, width, height
 
+
 # get all of the results above a threshold
 def get_boxes(boxes, labels, thresh):
     v_boxes, v_labels, v_scores = list(), list(), list()
@@ -124,9 +135,10 @@ def get_boxes(boxes, labels, thresh):
             if box.classes[i] > thresh:
                 v_boxes.append(box)
                 v_labels.append(labels[i])
-                v_scores.append(box.classes[i]*100)
+                v_scores.append(box.classes[i] * 100)
             # don't break, many labels may trigger for one box
     return v_boxes, v_labels, v_scores
+
 
 # draw all results
 def draw_boxes(filename, photo_boxed_filename, v_boxes, v_labels, v_scores):
@@ -137,7 +149,7 @@ def draw_boxes(filename, photo_boxed_filename, v_boxes, v_labels, v_scores):
     # get the context for drawing boxes
     ax = pyplot.gca()
     # plot each box
-    b_boxes= dict
+    b_boxes = dict
     for i in range(len(v_boxes)):
         box = v_boxes[i]
         # get coordinates
@@ -154,6 +166,8 @@ def draw_boxes(filename, photo_boxed_filename, v_boxes, v_labels, v_scores):
     # show the plot
     pyplot.savefig(photo_boxed_filename)
     pyplot.show()
+
+
 # load yolov3 model
 def vbox_engine(photo_filename):
     model = load_model('model.h5')
@@ -169,7 +183,7 @@ def vbox_engine(photo_filename):
     # summarize the shape of the list of arrays
     print([a.shape for a in yhat])
     # define the anchors
-    anchors = [[116,90, 156,198, 373,326], [30,61, 62,45, 59,119], [10,13, 16,30, 33,23]]
+    anchors = [[116, 90, 156, 198, 373, 326], [30, 61, 62, 45, 59, 119], [10, 13, 16, 30, 33, 23]]
     # define the probability threshold for detected objects
     class_threshold = 0.6
     boxes = list()
