@@ -1,0 +1,1 @@
+{"bound_boxes": [{"img_id": 5363546304, "XtopLeft": 128, "YtopLeft": 160, "XbottomRight": 345, "YbottomRight": 508, "Xcentroid": 236.5, "Ycentroid": 334.0, "area": 75516, "label": "giraffe"}]}
