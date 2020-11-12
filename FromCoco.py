@@ -13,7 +13,7 @@ def save_desc_to_file(description, file_name):
     w.writerow(description)
 
 
-def load_from_file(bound_boxes, file_name):
+def load_from_file(bound_boxes, file_name, v_labels):
     create_bound_boxes, create_prop, create_rels, create_rules, get_field_size = input_data()
     description = scene_description(bound_boxes, create_prop, create_rels, create_rules, get_field_size)
     print(description)
@@ -37,6 +37,6 @@ for i in range(len(v_boxes)):
     box = v_boxes[i]
     X_len = abs(box.XbottomRight - box.XtopLeft)
     Y_len = abs(box.YbottomRight - box.YtopLeft)
-    obj = Obj(str(i), [box.YtopLeft, box.XtopLeft], [Y_len, X_len])
+    obj = Obj(v_labels[i], [box.YtopLeft, box.XtopLeft], [Y_len, X_len])
     v_boxes_t[i] = obj
-load_from_file(v_boxes_t, input_filename)
+load_from_file(v_boxes_t, input_filename, v_labels)
