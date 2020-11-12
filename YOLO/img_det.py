@@ -170,7 +170,8 @@ def draw_boxes(filename, photo_boxed_filename, v_boxes, v_labels, v_scores):
 
 # load yolov3 model
 def vbox_engine(photo_filename):
-    model = load_model('model.h5')
+    data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model.h5")
+    model = load_model(data_path)
     # define the expected input shape for the model
     input_w, input_h = 416, 416
     # define our new photo
