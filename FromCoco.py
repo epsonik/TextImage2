@@ -31,12 +31,12 @@ photo_boxed_filename = input_filename.replace('.jpg', '_boxed.jpg')
 v_boxes, v_labels, v_scores, image_w, image_h = vbox_engine(input_filename)
 draw_boxes(input_filename, photo_boxed_filename, v_boxes, v_labels, v_scores)
 
-v_boxes = {}
+v_boxes_t = {}
 v_boxes_temp = []
 for i in range(len(v_boxes)):
     box = v_boxes[i]
     X_len = abs(box.XbottomRight - box.XtopLeft)
     Y_len = abs(box.YbottomRight - box.YtopLeft)
     obj = Obj(str(i), [box.YtopLeft, box.XtopLeft], [Y_len, X_len])
-    v_boxes[i] = obj
-load_from_file(v_boxes, input_filename)
+    v_boxes_t[i] = obj
+load_from_file(v_boxes_t, input_filename)
