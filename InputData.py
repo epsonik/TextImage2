@@ -21,12 +21,13 @@ def create_prop():
     props = {}
     # properties left and right
     props[0] = Prop('left edge', 1, 0.9, 'b_l', 'trapezoid', [-2, -2, -1, -0.85],
+    # trapezod coordinates
                     ["Przy lewej krawędzi znajduje się ", ". "])
     props[1] = Prop('left side', 2, 0.8, 'b_l', 'trapezoid', [-10, -0.9, -0.6, 0],
                     ["W lewej części pola widzimy ", ". "])
     props[2] = Prop('center left-right', 3, 0.9, 'c_lr', 'trapezoid', [-0.2, -0.05, 0.05, 0.2],
                     ["Na środku szerokości znajduje się ", ". "])
-    props[3] = Prop('right side', 4, 0.8, 'b_r', 'trapezoid', [0, 0.6, 0.9, 10],
+    props[3] = Prop('right side', 4, 2, 'b_r', 'trapezoid', [0, 0.6, 0.9, 10],
                     ["W prawej części pola widzimy ", ". "])
     props[4] = Prop('right edge', 5, 0.9, 'b_r', 'trapezoid', [0.85, 1, 2, 2],
                     ["Przy prawej krawędzi znajduje się ", ". "])
