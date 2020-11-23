@@ -27,7 +27,7 @@ def create_prop():
                     ["W lewej części pola widzimy ", ". "])
     props[2] = Prop('center left-right', 3, 0.9, 'c_lr', 'trapezoid', [-0.2, -0.05, 0.05, 0.2],
                     ["Na środku szerokości znajduje się ", ". "])
-    props[3] = Prop('right side', 4, 2, 'b_r', 'trapezoid', [0, 0.6, 0.9, 10],
+    props[3] = Prop('right side', 4, 1, 'b_r', 'trapezoid', [0, 0.6, 0.9, 10],
                     ["W prawej części pola widzimy ", ". "])
     props[4] = Prop('right edge', 5, 0.9, 'b_r', 'trapezoid', [0.85, 1, 2, 2],
                     ["Przy prawej krawędzi znajduje się ", ". "])
