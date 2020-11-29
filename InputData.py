@@ -23,7 +23,7 @@ def create_prop():
     props[0] = Prop('left edge', 1, 0.9, 'b_l', 'trapezoid', [-2, -2, -1, -0.85],
     # trapezod coordinates
                     ["Przy lewej krawędzi znajduje się ", ". "])
-    props[1] = Prop('left side', 2, 0.8, 'b_l', 'trapezoid', [-10, -0.9, -0.6, 0],
+    props[1] = Prop('left side', 2, 2, 'b_l', 'trapezoid', [-10, -0.9, -0.6, 0],
                     ["W lewej części pola widzimy ", ". "])
     props[2] = Prop('center left-right', 3, 0.9, 'c_lr', 'trapezoid', [-0.2, -0.05, 0.05, 0.2],
                     ["Na środku szerokości znajduje się ", ". "])
@@ -34,11 +34,11 @@ def create_prop():
     # propertes down and upper
     props[5] = Prop('top edge', 6, 0.7, 'b_t', 'trapezoid', [-2, -2, -1, -0.85],
                     ["Przy górnej krawędzi znajduje się ", ". "])
-    props[6] = Prop('upper part', 7, 0.5, 'b_t', 'trapezoid', [-10, -0.9, -0.6, 0],
+    props[6] = Prop('upper part', 7, 6, 'b_t', 'trapezoid', [-10, -0.9, -0.6, 0],
                     ["W górnej części pola widzimy ", ". "])
     props[7] = Prop('center up-down', 8, 0.8, 'c_tb', 'trapezoid', [-0.2, -0.05, 0.05, 0.2],
                     ["Na środku wysokości znajduje się ", ". "])
-    props[8] = Prop('lower part', 9, 0.5, 'b_b', 'trapezoid', [0, 0.6, 0.9, 10],
+    props[8] = Prop('lower part', 9, 1.1, 'b_b', 'trapezoid', [0, 0.6, 0.9, 10],
                     ["W dolnej części pola widzimy ", ". "])
     props[9] = Prop('bottom edge', 10, 0.7, 'b_b', 'trapezoid', [0.85, 1, 2, 2],
                     ["Przy dolnej krawędzi znajduje się ", ". "])
@@ -66,12 +66,12 @@ def create_rels():
 # define rules
 def create_rules():
     rules = {}
-    rules[0] = Rule('center', 41, 1, 3, 8, 'min', ["Obiekt ", " znajduje się na środku pola", ". "])
-    rules[1] = Rule('top left corner', 42, 1, 1, 6, 'min',
+    rules[0] = Rule('center', 41, 1.1, 3, 8, 'min', ["Obiekt ", " znajduje się na środku pola", ". "])
+    rules[1] = Rule('top left corner', 42, 1, 1.1, 6, 'min',
                     ["Obiekt ", " znajduje się w lewym-górnym narożniku pola", ". "])
-    rules[2] = Rule('top right corner', 43, 1, 5, 6, 'min',
+    rules[2] = Rule('top right corner', 43, 1.1, 5, 6, 'min',
                     ["Obiekt ", " znajduje się w prawym-górnym narożniku pola", ". "])
-    rules[3] = Rule('bottom right corner', 44, 1, 5, 10, 'min',
+    rules[3] = Rule('bottom right corner', 44, 1.1, 5, 10, 'min',
                     ["Obiekt ", " w prawym-dolnym narożniku pola", ". "])
     rules[4] = Rule('bottom left corner', 45, 1, 1, 10, 'min',
                     ["Obiekt ", " znajduje się w lewym-dolnym narożniku pola", ". "])
