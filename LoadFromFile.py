@@ -1,4 +1,5 @@
 import csv
+import os
 
 import cv2
 import numpy as np
@@ -32,23 +33,27 @@ def show_rectangles(bound_boxes):
         # press 'r' to reset the window
         # if the 'c' key is pressed, break from the loop
         cv2.imshow("image", image)
+        cv2.imwrite(file_name.replace('.csv', '_image.jpg'), image)
+
         if key == ord("c"):
             break
 
 
-def load_from_file(bound_boxes, readCSV, file_name):
-    create_bound_boxes, create_prop, create_rels, create_rules, get_field_size = input_data()
+def load_from_file(bound_boxes, readCSV, file_name, language_name):
+    create_bound_boxes, create_prop, create_rels, create_rules, get_field_size = input_data(language_name)
     description = scene_description(bound_boxes, create_prop, create_rels, create_rules, get_field_size)
-    print(description)
+    print(*description, sep='\n')
     save_desc_to_file(description, file_name)
     show_rectangles(readCSV)
 
 
-file_name = input("Enter a file name to load bBoxes. Data must be delimited with ',': ")
-file_name = str(file_name)
-
-# Prints in the console the variable as requested
-print("The file name you entered is: ", file_name)
+# file_name = input("Enter a file name to load bBoxes. Data must be delimited with ',': ")
+# file_name = str(file_name)
+#
+# # Prints in the console the variable as requested
+# print("The file name you entered is: ", file_name)
+os.chdir(r'test')
+file_name = "file9W.csv"
 v_boxes = {}
 v_boxes_temp = []
 with open(file_name) as csvfile:
@@ -63,4 +68,4 @@ with open(file_name) as csvfile:
             Y_len = abs(YbottomRight - YtopLeft)
             obj = Obj(name, [YtopLeft, XtopLeft], [Y_len, X_len])
             v_boxes[int(name)] = obj
-load_from_file(v_boxes, v_boxes_temp, file_name)
+load_from_file(v_boxes, v_boxes_temp, file_name, language_name="PL")

@@ -5,14 +5,8 @@ import numpy
 import pandas as pd
 
 from DrawField import draw_field
-from Obj import Obj, ObjData
-from Prop import Prop
-from Rule import Rule
-
-
-
-
-
+from InputData import input_data
+from Obj import ObjData
 
 # generate description
 def scene_description(create_bound_boxes, create_prop, create_rels, create_rules, get_field_size):
@@ -74,6 +68,10 @@ def get_mfarg(ob_data, pr, ob_num1, ob_num2):
     # bottom border of bound_box
     elif (pr.farg == 'b_b'):
         out = ob_data.down
+    elif (pr.farg == 'f_w'):
+        out = ob_data.horiz_len
+    elif (pr.farg == 'f_h'):
+        out = ob_data.vert_len
     # centroid top-bottom
     elif (pr.farg == 'c_ud'):
         out = (numpy.array(ob_data.up) + numpy.array(ob_data.down)) / 2
@@ -292,10 +290,6 @@ def select_predicates(obj_data, pred, num_times):
 
     pred_out = A[most_important_predicates_filter()]
     return pred_out.to_numpy()
-
-
-
-
 
 
 # generate decription from the matrix with most important predicates
