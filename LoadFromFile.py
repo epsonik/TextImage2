@@ -6,7 +6,7 @@ import numpy as np
 
 from InputData import input_data, get_field_size
 from Obj import Obj
-from SceneDescription import scene_description
+from SceneDescription import scene_description, group_filter
 
 image = np.zeros((get_field_size()[0], get_field_size()[1], 3), np.uint8)
 
@@ -39,8 +39,8 @@ def show_rectangles(bound_boxes):
             break
 
 
-def load_from_file(bound_boxes, readCSV, file_name, language_name):
-    create_bound_boxes, create_prop, create_rels, create_rules, get_field_size = input_data(language_name)
+def load_from_file(bound_boxes, readCSV, file_name):
+    create_bound_boxes, create_prop, create_rels, create_rules, get_field_size = input_data()
     description = scene_description(bound_boxes, create_prop, create_rels, create_rules, get_field_size)
     print(*description, sep='\n')
     save_desc_to_file(description, file_name)
@@ -53,19 +53,26 @@ def load_from_file(bound_boxes, readCSV, file_name, language_name):
 # # Prints in the console the variable as requested
 # print("The file name you entered is: ", file_name)
 os.chdir(r'test')
-file_name = "file9W.csv"
-v_boxes = {}
+file_name = "groups.csv"
+v_boxes = []
 v_boxes_temp = []
+names_set = set()
 with open(file_name) as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
-    for b_box in readCSV:
-        if len(b_box) > 0:
-            name = b_box[0]
-            v_boxes_temp.append(b_box)
-            XtopLeft, YtopLeft = int(b_box[1]), int(b_box[2])
-            XbottomRight, YbottomRight = int(b_box[3]), int(b_box[4])
-            X_len = abs(XbottomRight - XtopLeft)
-            Y_len = abs(YbottomRight - YtopLeft)
-            obj = Obj(name, [YtopLeft, XtopLeft], [Y_len, X_len])
-            v_boxes[int(name)] = obj
-load_from_file(v_boxes, v_boxes_temp, file_name, language_name="PL")
+    for box in readCSV:
+        if len(box) > 0:
+            v_boxes_temp.append(box)
+            name = box[0]
+            names_set.add(name)
+v_boxes_new = group_filter(names_set, v_boxes_temp)
+v_boxes_temp = v_boxes_new
+for b_box in v_boxes_new:
+    name = b_box[0]
+    XtopLeft, YtopLeft = int(b_box[1]), int(b_box[2])
+    XbottomRight, YbottomRight = int(b_box[3]), int(b_box[4])
+    X_len = abs(XbottomRight - XtopLeft)
+    Y_len = abs(YbottomRight - YtopLeft)
+    obj = Obj(name, [YtopLeft, XtopLeft], [Y_len, X_len])
+    v_boxes.append(obj)
+
+load_from_file(v_boxes, v_boxes_temp, file_name)

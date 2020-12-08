@@ -8,6 +8,37 @@ from DrawField import draw_field
 from InputData import input_data
 from Obj import ObjData
 
+
+def grouping(b_boxes_to_merge):
+    XtopLeftList, YtopLeftList = list(), list()
+    XbottomRightList, YbottomRightList = list(), list()
+    for box in b_boxes_to_merge:
+        XtopLeftList.append(int(box[1]))
+        YtopLeftList.append(int(box[2]))
+        XbottomRightList.append(int(box[3]))
+        YbottomRightList.append(int(box[4]))
+
+    return min(XtopLeftList), min(YtopLeftList), max(XbottomRightList), max(YbottomRightList), b_boxes_to_merge[0][5]
+
+
+def group_filter(names_set: set, v_boxes_temp: list):
+    groups = {}
+    v_boxes_new = []
+    if names_set.__len__() != v_boxes_temp.__len__():
+        for name in names_set:
+            groups[name] = []
+            for box in v_boxes_temp:
+                temp_name = box[0]
+                if temp_name == name:
+                    groups[name].append(box)
+    for key, value in groups.items():
+        if len(value) > 1:
+            v_boxes_new.append([key] + list(grouping(value)))
+        else:
+            v_boxes_new.append(value[0])
+    return v_boxes_new
+
+
 # generate description
 def scene_description(create_bound_boxes, create_prop, create_rels, create_rules, get_field_size):
     # generowanie opisu sceny
@@ -138,7 +169,8 @@ def get_predicates(obj_data, prop, rel):
     # count values of realations confidence factor
     obj_rel = get_relations(obj_data, rel)
     # generate predicates
-    counter = 0
+    counterA = 0
+    counterB = 0
     pred = []
     # iterate over object reference number
     for i in range(obj_data.num):
@@ -162,7 +194,7 @@ def get_predicates(obj_data, prop, rel):
                 # used in rules
                 temp.append(obj_prop[j][i])
                 pred.append(temp)
-                counter += 1
+                counterA += 1
         # realtions
         # iterate over objects, which  i objects is in relation
         for k in range(obj_data.num):
@@ -185,7 +217,7 @@ def get_predicates(obj_data, prop, rel):
                     # used in rules
                     temp.append(obj_rel[j, i, k])
                     pred.append(temp)
-                    counter = counter + 1
+                    counterB = counterB + 1
 
     return pred
 
@@ -298,14 +330,14 @@ def get_description(obj, pred, prop, rel, rule):
     for i in range(len(pred)):
         # property
         if (pred[i][4] == -1):
-            zdanie = prop[pred[i][5]].text[0] + obj[pred[i][3]].name + prop[pred[i][5]].text[1]
+            zdanie = prop[pred[i][5]].text[0] + obj[int(pred[i][3])].name + prop[pred[i][5]].text[1]
             desc.append(zdanie)
         elif (pred[i][4] == -2):
-            zdanie = rule[pred[i][5]].text[0] + obj[pred[i][3]].name + rule[pred[i][5]].text[1]
+            zdanie = rule[pred[i][5]].text[0] + obj[int(pred[i][3])].name + rule[pred[i][5]].text[1]
             desc.append(zdanie)
         # relation
         else:
-            zdanie = rel[pred[i][5]].text[0] + obj[pred[i][3]].name + rel[pred[i][5]].text[1] + obj[pred(i, 5)].name, \
+            zdanie = rel[pred[i][5]].text[0] + obj[int(pred[i][3])].name + rel[pred[i][5]].text[1] + obj[pred(i, 5)].name, \
                      rel[pred[i][5]].text[2]
             desc.append(zdanie)
     return desc

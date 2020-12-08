@@ -5,7 +5,7 @@ from Rule import Rule
 
 language = "PL"
 
-def input_data(language_name):
+def input_data():
     # data of objects at the beginning
     return create_bound_boxes(), create_prop(), create_rels(), create_rules(), get_field_size()
 
