@@ -24,27 +24,25 @@ def _interactive_mode():
         cv2.imshow("image", image)
         if ref_points.__len__() > 1:
             _calculate_pos(ref_points)
-
-    def adj_x(corner):
+    def adj_x(corner, n):
         corner_l = list(corner)
-        corner_l[0] += 5
+        corner_l[0] += n
         return tuple(corner_l)
 
-    def unadj_x(corner):
+    def unadj_x(corner, n):
         corner_l = list(corner)
-        corner_l[0] -= 5
+        corner_l[0] -= n
         return tuple(corner_l)
 
-    def unadj_y(corner):
+    def unadj_y(corner, n):
         corner_l = list(corner)
-        corner_l[1] -= 5
+        corner_l[1] -= n
         return tuple(corner_l)
 
-    def adj_y(corner):
+    def adj_y(corner, n):
         corner_l = list(corner)
-        corner_l[1] += 5
+        corner_l[1] += n
         return tuple(corner_l)
-
     clone = image.copy()
     cv2.namedWindow("image")
 
@@ -91,8 +89,8 @@ def _interactive_mode():
         elif key == ord("d"):
             ref_points[actual_rectangle_idx] = actual_rectangle
 
-            actual_rectangle[0] = adj_x(actual_rectangle[0])
-            actual_rectangle[1] = adj_x(actual_rectangle[1])
+            actual_rectangle[0] = adj_x(actual_rectangle[0], 5)
+            actual_rectangle[1] = adj_x(actual_rectangle[1], 5)
 
             # draw a rectangle around the region of interest
             image = clone.copy()
@@ -100,24 +98,24 @@ def _interactive_mode():
         elif key == ord("w"):
             ref_points[actual_rectangle_idx] = actual_rectangle
 
-            actual_rectangle[0] = unadj_y(actual_rectangle[0])
-            actual_rectangle[1] = unadj_y(actual_rectangle[1])
+            actual_rectangle[0] = unadj_y(actual_rectangle[0], 5)
+            actual_rectangle[1] = unadj_y(actual_rectangle[1], 5)
             image = clone.copy()
             # draw a rectangle around the region of interest
             show_rectangles()
         elif key == ord("s"):
             ref_points[actual_rectangle_idx] = actual_rectangle
 
-            actual_rectangle[0] = adj_y(actual_rectangle[0])
-            actual_rectangle[1] = adj_y(actual_rectangle[1])
+            actual_rectangle[0] = adj_y(actual_rectangle[0],5)
+            actual_rectangle[1] = adj_y(actual_rectangle[1],5)
             image = clone.copy()
             # draw a rectangle around the region of interest
             show_rectangles()
         elif key == ord("a"):
             ref_points[actual_rectangle_idx] = actual_rectangle
 
-            actual_rectangle[0] = unadj_x(actual_rectangle[0])
-            actual_rectangle[1] = unadj_x(actual_rectangle[1])
+            actual_rectangle[0] = unadj_x(actual_rectangle[0], 5)
+            actual_rectangle[1] = unadj_x(actual_rectangle[1], 5)
             image = clone.copy()
             # draw a rectangle around the region of interest
             show_rectangles()

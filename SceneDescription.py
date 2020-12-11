@@ -9,34 +9,7 @@ from InputData import input_data
 from Obj import ObjData
 
 
-def grouping(b_boxes_to_merge):
-    XtopLeftList, YtopLeftList = list(), list()
-    XbottomRightList, YbottomRightList = list(), list()
-    for box in b_boxes_to_merge:
-        XtopLeftList.append(int(box[1]))
-        YtopLeftList.append(int(box[2]))
-        XbottomRightList.append(int(box[3]))
-        YbottomRightList.append(int(box[4]))
 
-    return min(XtopLeftList), min(YtopLeftList), max(XbottomRightList), max(YbottomRightList), b_boxes_to_merge[0][5]
-
-
-def group_filter(names_set: set, v_boxes_temp: list):
-    groups = {}
-    v_boxes_new = []
-    if names_set.__len__() != v_boxes_temp.__len__():
-        for name in names_set:
-            groups[name] = []
-            for box in v_boxes_temp:
-                temp_name = box[0]
-                if temp_name == name:
-                    groups[name].append(box)
-    for key, value in groups.items():
-        if len(value) > 1:
-            v_boxes_new.append([key] + list(grouping(value)))
-        else:
-            v_boxes_new.append(value[0])
-    return v_boxes_new
 
 
 # generate description

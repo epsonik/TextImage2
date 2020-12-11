@@ -6,7 +6,8 @@ import numpy as np
 
 from InputData import input_data, get_field_size
 from Obj import Obj
-from SceneDescription import scene_description, group_filter
+from Intersection import change_to_width_len_format, intersection_measure
+from SceneDescription import scene_description
 
 image = np.zeros((get_field_size()[0], get_field_size()[1], 3), np.uint8)
 
@@ -53,7 +54,7 @@ def load_from_file(bound_boxes, readCSV, file_name):
 # # Prints in the console the variable as requested
 # print("The file name you entered is: ", file_name)
 os.chdir(r'test')
-file_name = "groups.csv"
+file_name = "test5.csv"
 v_boxes = []
 v_boxes_temp = []
 names_set = set()
@@ -64,14 +65,13 @@ with open(file_name) as csvfile:
             v_boxes_temp.append(box)
             name = box[0]
             names_set.add(name)
-v_boxes_new = group_filter(names_set, v_boxes_temp)
-v_boxes_temp = v_boxes_new
-for b_box in v_boxes_new:
+for idx, x  in enumerate(intersection_measure(v_boxes_temp)):
+    print(intersection_measure(v_boxes_temp)[idx])
+# v_boxes_new = group_filter_name(names_set, v_boxes_temp)
+# v_boxes_temp = v_boxes_new
+for b_box in v_boxes_temp:
     name = b_box[0]
-    XtopLeft, YtopLeft = int(b_box[1]), int(b_box[2])
-    XbottomRight, YbottomRight = int(b_box[3]), int(b_box[4])
-    X_len = abs(XbottomRight - XtopLeft)
-    Y_len = abs(YbottomRight - YtopLeft)
+    XtopLeft, YtopLeft, X_len, Y_len = change_to_width_len_format(b_box)
     obj = Obj(name, [YtopLeft, XtopLeft], [Y_len, X_len])
     v_boxes.append(obj)
 
