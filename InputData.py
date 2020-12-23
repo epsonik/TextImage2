@@ -1,9 +1,10 @@
 #  dane testowe
 from Obj import Obj
-from Prop import Prop
+from Prop import Prop, CoordinateName
 from Rule import Rule
 
 language = "PL"
+
 
 def input_data():
     # data of objects at the beginning
@@ -22,30 +23,37 @@ def create_prop():
     props = {}
     # properties left and right
     props[0] = Prop('left edge', 1, 0.9, 'b_l', 'trapezoid', [-2, -2, -1, -0.85],
-                    ["Przy lewej krawędzi znajduje się ", ". "], ["Next to the left border is ", ". "])
+                    ["Przy lewej krawędzi znajduje się ", ". "], ["Next to the left border is ", ". "],
+                    CoordinateName.X)
     props[1] = Prop('left side', 2, 1, 'b_l', 'trapezoid', [-10, -0.9, -0.6, 0],
-                    ["W lewej części pola widzimy ", ". "], ["In the left part of field is ", ". "])
+                    ["W lewej części pola widzimy ", ". "], ["In the left part of field is ", ". "], CoordinateName.X)
     props[2] = Prop('center left-right', 3, 0.9, 'c_lr', 'trapezoid', [-0.2, -0.05, 0.05, 0.2],
-                    ["Na środku szerokości znajduje się ", ". "], ["In the center of width is ", ". "])
+                    ["Na środku szerokości znajduje się ", ". "], ["In the center of width is ", ". "],
+                    CoordinateName.X)
     props[3] = Prop('right side', 4, 1, 'b_r', 'trapezoid', [0, 0.6, 0.9, 10],
-                    ["W prawej części pola widzimy ", ". "], ["In the right part of field is ", ". "])
+                    ["W prawej części pola widzimy ", ". "], ["In the right part of field is ", ". "], CoordinateName.X)
     props[4] = Prop('right edge', 5, 0.9, 'b_r', 'trapezoid', [0.85, 1, 2, 2],
-                    ["Przy prawej krawędzi znajduje się ", ". "], ["Next to the right border is ", ". "])
+                    ["Przy prawej krawędzi znajduje się ", ". "], ["Next to the right border is ", ". "],
+                    CoordinateName.X)
     # propertes down and upper
     props[5] = Prop('top edge', 6, 0.7, 'b_t', 'trapezoid', [-2, -2, -1, -0.85],
-                    ["Przy górnej krawędzi znajduje się ", ". "], ["Next to the top border is ", ". "])
+                    ["Przy górnej krawędzi znajduje się ", ". "], ["Next to the top border is ", ". "],
+                    CoordinateName.Y)
     props[6] = Prop('upper part', 7, 6, 'b_t', 'trapezoid', [-10, -0.9, -0.6, 0],
-                    ["W górnej części pola widzimy ", ". "], ["In the top part of field is ", ". "])
+                    ["W górnej części pola widzimy ", ". "], ["In the top part of field is ", ". "], CoordinateName.Y)
     props[7] = Prop('center up-down', 8, 0.8, 'c_tb', 'trapezoid', [-0.2, -0.05, 0.05, 0.2],
-                    ["Na środku wysokości znajduje się ", ". "], ["In the center of height is ", ". "])
+                    ["Na środku wysokości znajduje się ", ". "], ["In the center of height is ", ". "],
+                    CoordinateName.Y)
     props[8] = Prop('lower part', 9, 1.1, 'b_b', 'trapezoid', [0, 0.6, 0.9, 10],
-                    ["W dolnej części pola widzimy ", ". "], ["In the bottom part of the field is", ". "])
+                    ["W dolnej części pola widzimy ", ". "], ["In the bottom part of the field is", ". "],
+                    CoordinateName.Y)
     props[9] = Prop('bottom edge', 10, 0.7, 'b_b', 'trapezoid', [0.85, 1, 2, 2],
-                    ["Przy dolnej krawędzi znajduje się ", ". "], ["Next to the bottom corner is ", ". "])
+                    ["Przy dolnej krawędzi znajduje się ", ". "], ["Next to the bottom corner is ", ". "],
+                    CoordinateName.Y)
     props[10] = Prop('full width', 11, 1.9, 'f_w', 'trapezoid', [0.5, 0.6, 1, 0.5],
-                     ["Na całej szerokości znajduje się ", ". "], ["On the full width is ", ". "])
+                     ["Na całej szerokości znajduje się ", ". "], ["On the full width is ", ". "], CoordinateName.Y)
     props[11] = Prop('full height', 11, 0.9, 'f_h', 'trapezoid', [0.5, 0.6, 1, 0.5],
-                     ["Na całej wysokości znajduje się ", ". "], ["On the full height is ", ". "])
+                     ["Na całej wysokości znajduje się ", ". "], ["On the full height is ", ". "], CoordinateName.Y)
     return props
 
 
@@ -72,7 +80,8 @@ def create_rels():
 # define rules
 def create_rules():
     rules = {}
-    rules[0] = Rule('center', 41, 1.1, 3, 8, 'min', ["Obiekt ", " znajduje się na środku pola", ". "],
+    rules[0] = Rule('center', 41, 1.1, 3, 8, 'min',
+                    ["Obiekt ", " znajduje się na środku pola", ". "],
                     ["Object ", " is on the center of field", ". "])
     rules[1] = Rule('top left corner', 42, 1, 1.1, 6, 'min',
                     ["Obiekt ", " znajduje się w lewym-górnym narożniku pola", ". "],

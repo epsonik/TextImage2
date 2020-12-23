@@ -5,8 +5,8 @@ import cv2
 import numpy as np
 
 from InputData import input_data, get_field_size
+from Intersection import change_to_width_len_format
 from Obj import Obj
-from Intersection import change_to_width_len_format, intersection_measure
 from SceneDescription import scene_description
 
 image = np.zeros((get_field_size()[0], get_field_size()[1], 3), np.uint8)
@@ -65,8 +65,6 @@ with open(file_name) as csvfile:
             v_boxes_temp.append(box)
             name = box[0]
             names_set.add(name)
-for idx, x  in enumerate(intersection_measure(v_boxes_temp)):
-    print(intersection_measure(v_boxes_temp)[idx])
 # v_boxes_new = group_filter_name(names_set, v_boxes_temp)
 # v_boxes_temp = v_boxes_new
 for b_box in v_boxes_temp:
