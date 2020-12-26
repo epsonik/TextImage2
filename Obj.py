@@ -6,7 +6,7 @@ class Obj():
 
 
 class ObjData():
-    def __init__(self, num=0, left=None, right=None, horiz_len=None, up=None, down=None, vert_len=None, size=None):
+    def __init__(self, number_of_b_boxes=0, left=None, right=None, horiz_len=None, up=None, down=None, vert_len=None, size=None):
         if size is None:
             size = []
         if vert_len is None:
@@ -21,7 +21,7 @@ class ObjData():
             right = []
         if left is None:
             left = []
-        self.num = num
+        self.number_of_b_boxes = number_of_b_boxes
         self.left = left
         self.right = right
         self.horiz_len = horiz_len

@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from Obj import ObjData
-from SceneDescription import get_relpos, create_bound_boxes, get_field_size, create_prop, get_properties, get_mfarg, tmf
+from SceneDescription import get_relpos, create_bound_boxes, get_field_size, create_prop, get_properties, get_mfarg
 
 
 class TestInit(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestInit(unittest.TestCase):
 
     def test_relpos(self):
         obj_data = get_relpos(create_bound_boxes(), get_field_size())
-        self.assertEqual(self.num, obj_data.num)
+        self.assertEqual(self.number_of_b_boxes, obj_data.number_of_b_boxes)
 
     def test_relpos_left(self):
         obj_data = get_relpos(create_bound_boxes(), get_field_size())

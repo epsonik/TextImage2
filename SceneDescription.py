@@ -9,9 +9,6 @@ from InputData import input_data
 from Obj import ObjData
 
 
-
-
-
 # generate description
 def scene_description(create_bound_boxes, create_prop, create_rels, create_rules, get_field_size):
     # generowanie opisu sceny
@@ -21,7 +18,7 @@ def scene_description(create_bound_boxes, create_prop, create_rels, create_rules
     # create predicated based on rules
     rule_pred = add_rule_predicates(obj_data, pred, create_rules)
     # select correct predicated
-    pred_sel = select_predicates(obj_data, pred + rule_pred, 1)
+    pred_sel = select_predicates(obj_data, pred + rule_pred, 1, 3)
     # generate description from selected predicated
     description = get_description(create_bound_boxes, pred_sel, create_prop, create_rels, create_rules)
     return description
@@ -29,7 +26,7 @@ def scene_description(create_bound_boxes, create_prop, create_rels, create_rules
 
 # create relative position of objects
 def get_relpos(obj, field_size):
-    num = len(obj)
+    number_of_b_boxes = len(obj)
     left = []
     right = []
     horiz_len = []
@@ -37,7 +34,7 @@ def get_relpos(obj, field_size):
     down = []
     vert_len = []
     size = []
-    for i in range(num):
+    for i in range(number_of_b_boxes):
         # check if object left position trend is 1 not -1
         left.append(2 * obj[i].pos[1] / field_size[1] - 1)
         right.append(2 * (obj[i].pos[1] + obj[i].length[1]) / field_size[1] - 1)
@@ -46,7 +43,7 @@ def get_relpos(obj, field_size):
         down.append(2 * (obj[i].pos[0] + obj[i].length[0]) / field_size[1] - 1)
         vert_len.append(obj[i].length[0] / field_size[0])
         size.append(horiz_len[i] * vert_len[i])
-    obj_data = ObjData(num, left, right, horiz_len, up, down, vert_len, size)
+    obj_data = ObjData(number_of_b_boxes, left, right, horiz_len, up, down, vert_len, size)
 
     return obj_data
 
@@ -146,7 +143,7 @@ def get_predicates(obj_data, prop, rel):
     counterB = 0
     pred = []
     # iterate over object reference number
-    for i in range(obj_data.num):
+    for i in range(obj_data.number_of_b_boxes):
         # properties
         for j in range(len(prop)):
             # values of membership fuction
@@ -170,7 +167,7 @@ def get_predicates(obj_data, prop, rel):
                 counterA += 1
         # realtions
         # iterate over objects, which  i objects is in relation
-        for k in range(obj_data.num):
+        for k in range(obj_data.number_of_b_boxes):
             # iterate over relation number
             for j in range(len(rel)):
                 if obj_rel[j, i, k] > 0:
@@ -198,11 +195,11 @@ def get_predicates(obj_data, prop, rel):
 # generate values od fuzzy descriptors position per relations
 def get_relations(ob_data, rel):
     import numpy
-    obj_rel = numpy.ones((len(rel), ob_data.num, ob_data.num))
+    obj_rel = numpy.ones((len(rel), ob_data.number_of_b_boxes, ob_data.number_of_b_boxes))
 
     for k in range(len(rel)):
-        for i in range(ob_data.num):
-            for j in range(ob_data.num):
+        for i in range(ob_data.number_of_b_boxes):
+            for j in range(ob_data.number_of_b_boxes):
                 temp = tmf(get_mfarg(ob_data, rel[k], i, j), rel[k].ftype, rel[k].fthr)
                 obj_rel[k, i, j] = temp[0]
     return obj_rel
@@ -263,25 +260,24 @@ def combine_mf(val1, val2, type):
 
 # select most important predicates
 # num_times - how often object is mentioned in the text
-def select_predicates(obj_data, pred, num_times):
+def select_predicates(obj_data, pred, num_times_coordinate_x, num_times_coordinate_y):
     # sort by certainty factor of predicate
     def myFunc(e):
         return e[1]
 
     pred.sort(key=myFunc, reverse=True)
-    pred_out = []
     # select most improtant predicates
-    used = numpy.zeros((obj_data.num))
+    used = numpy.zeros((obj_data.number_of_b_boxes))
     for i in range(len(pred)):
         # properties or rules
         if pred[i][4] < 0:
-            if used[pred[i][3]] < num_times:
+            if used[pred[i][3]] < num_times_coordinate_y:
                 used[pred[i][3]] = used[pred[i][3]] + 1
                 pred[i][2] = 1
         # pred(i,5) > 0 -> relation
         else:
             # second object in relation should used previously
-            if (used[pred[i][3]] < num_times) & (used[pred[i][3]] == 1):
+            if (used[pred[i][3]] < num_times_coordinate_y) & (used[pred[i][3]] == 1):
                 used[pred[i][3]] = used[pred[i][3]] + 1
                 pred[i][2] = 1
     A = pd.DataFrame(numpy.array(pred))
@@ -310,7 +306,8 @@ def get_description(obj, pred, prop, rel, rule):
             desc.append(zdanie)
         # relation
         else:
-            zdanie = rel[pred[i][5]].text[0] + obj[int(pred[i][3])].name + rel[pred[i][5]].text[1] + obj[pred(i, 5)].name, \
+            zdanie = rel[pred[i][5]].text[0] + obj[int(pred[i][3])].name + rel[pred[i][5]].text[1] + obj[
+                pred(i, 5)].name, \
                      rel[pred[i][5]].text[2]
             desc.append(zdanie)
     return desc
