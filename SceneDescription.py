@@ -296,19 +296,19 @@ def select_predicates(obj_data, pred, num_times_coordinate_x, num_times_coordina
 # generate decription from the matrix with most important predicates
 def get_description(obj, pred, prop, rel, rule):
     desc = []
-    for i in range(len(pred)):
+    for pred_idx in range(len(pred)):
         # property
-        if (pred[i][4] == -1):
-            zdanie = prop[pred[i][5]].text[0] + obj[int(pred[i][3])].name + prop[pred[i][5]].text[1]
+        if (pred[pred_idx][4] == -1):
+            zdanie = prop[pred[pred_idx][5]].text[0] + obj[int(pred[pred_idx][3])].name + prop[pred[pred_idx][5]].text[1]
             desc.append(zdanie)
-        elif (pred[i][4] == -2):
-            zdanie = rule[pred[i][5]].text[0] + obj[int(pred[i][3])].name + rule[pred[i][5]].text[1]
+        elif (pred[pred_idx][4] == -2):
+            zdanie = rule[pred[pred_idx][5]].text[0] + obj[int(pred[pred_idx][3])].name + rule[pred[pred_idx][5]].text[1]
             desc.append(zdanie)
         # relation
         else:
-            zdanie = rel[pred[i][5]].text[0] + obj[int(pred[i][3])].name + rel[pred[i][5]].text[1] + obj[
-                pred(i, 5)].name, \
-                     rel[pred[i][5]].text[2]
+            zdanie = rel[pred[pred_idx][5]].text[0] + obj[int(pred[pred_idx][3])].name + rel[pred[pred_idx][5]].text[1] + obj[
+                pred(pred_idx, 5)].name, \
+                     rel[pred[pred_idx][5]].text[2]
             desc.append(zdanie)
     return desc
 
