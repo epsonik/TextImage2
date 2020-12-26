@@ -212,25 +212,25 @@ def add_rule_predicates(obj_data, pred, rule):
     counter = 0
     rule_pred = []
     # iterate over rules
-    for i in range(len(rule)):
+    for rule_idx in range(len(rule)):
         # iterate over predicates
-        for j in range(len(pred)):
+        for pred_idx in range(len(pred)):
             # found predicate with first premise
-            if (pred[j][0] == rule[i].id_first):
+            if (pred[pred_idx][0] == rule[rule_idx].id_first):
                 # save object number
-                obj_found = pred[j][3]
+                obj_found = pred[pred_idx][3]
                 # iterate over predicates - look for second premise
-                for k in range(len(pred)):
-                    if ((pred[k][0] == rule[i].id_second) and (pred[k][3] == obj_found)):
+                for pred_second_premise_idx in range(len(pred)):
+                    if ((pred[pred_second_premise_idx][0] == rule[rule_idx].id_second) and (pred[pred_second_premise_idx][3] == obj_found)):
                         # second second premise for the same object
-                        if ((pred[j][6] != 0) and (pred[k][6] != 0)):
+                        if ((pred[pred_idx][6] != 0) and (pred[pred_second_premise_idx][6] != 0)):
                             # if is not equal to 0, calculates new predicate
-                            ruleobj_cf = combine_mf(pred[j][6], pred[k][6], rule[i].operator)
+                            ruleobj_cf = combine_mf(pred[pred_idx][6], pred[pred_second_premise_idx][6], rule[rule_idx].operator)
                             temp = []
                             # predicate id from rules
-                            temp.append(rule[i].id)
+                            temp.append(rule[rule_idx].id)
                             # confidence factor
-                            temp.append(ruleobj_cf * sal[obj_found] * rule[i].psal)
+                            temp.append(ruleobj_cf * sal[obj_found] * rule[rule_idx].psal)
                             # usage pointer
                             temp.append(0)
                             # object number
@@ -238,7 +238,7 @@ def add_rule_predicates(obj_data, pred, rule):
                             # lack of second object(rule)
                             temp.append(-2)
                             # rule number
-                            temp.append(i)
+                            temp.append(rule_idx)
                             #
                             temp.append(ruleobj_cf)
                             rule_pred.append(temp)
