@@ -145,14 +145,14 @@ def get_predicates(obj_data, prop, rel):
     # iterate over object reference number
     for box_idx_main in range(obj_data.number_of_b_boxes):
         # properties
-        for j in range(len(prop)):
+        for prop_idx in range(len(prop)):
             # values of membership fuction
-            if obj_prop[j][box_idx_main] > 0:
+            if obj_prop[prop_idx][box_idx_main] > 0:
                 temp = []
                 # predicate id from property
-                temp.append(prop[j].id)
+                temp.append(prop[prop_idx].id)
                 # confidence factor
-                temp.append(obj_prop[j][box_idx_main] * sal[box_idx_main] * prop[j].psal)
+                temp.append(obj_prop[prop_idx][box_idx_main] * sal[box_idx_main] * prop[prop_idx].psal)
                 # usage pointer
                 temp.append(0)
                 # number of referencje object
@@ -160,22 +160,22 @@ def get_predicates(obj_data, prop, rel):
                 # not use with properties
                 temp.append(-1)
                 # property number
-                temp.append(j)
+                temp.append(prop_idx)
                 # used in rules
-                temp.append(obj_prop[j][box_idx_main])
+                temp.append(obj_prop[prop_idx][box_idx_main])
                 pred.append(temp)
                 counterA += 1
         # realtions
         # iterate over objects, which  i objects is in relation
         for box_idx in range(obj_data.number_of_b_boxes):
             # iterate over relation number
-            for j in range(len(rel)):
-                if obj_rel[j, box_idx_main, box_idx] > 0:
+            for rel_idx in range(len(rel)):
+                if obj_rel[rel_idx, box_idx_main, box_idx] > 0:
                     temp = []
                     # predicate id from relation
-                    temp.append(rel[j].id)
+                    temp.append(rel[rel_idx].id)
                     # confidence factor
-                    temp.append(obj_rel[j, box_idx_main, box_idx] * sal[box_idx_main] * rel[j].psal)
+                    temp.append(obj_rel[rel_idx, box_idx_main, box_idx] * sal[box_idx_main] * rel[rel_idx].psal)
                     # usage pointer
                     temp.append(0)
                     # number of referencje object
@@ -183,9 +183,9 @@ def get_predicates(obj_data, prop, rel):
                     # number of second object from relation
                     temp.append(box_idx)
                     # relation number
-                    temp.append(j)
+                    temp.append(rel_idx)
                     # used in rules
-                    temp.append(obj_rel[j, box_idx_main, box_idx])
+                    temp.append(obj_rel[rel_idx, box_idx_main, box_idx])
                     pred.append(temp)
                     counterB = counterB + 1
 
