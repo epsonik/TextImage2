@@ -2,14 +2,14 @@ import statistics
 from math import sqrt
 
 import numpy
-import pandas as pd
 
 from DrawField import draw_field
 from InputData import input_data
 from Obj import ObjData
-
-
 # generate description
+from Pred import Pred
+
+
 def scene_description(create_bound_boxes, create_prop, create_rels, create_rules, get_field_size):
     # generowanie opisu sceny
     # create relative positions of obiektów
@@ -18,7 +18,7 @@ def scene_description(create_bound_boxes, create_prop, create_rels, create_rules
     # create predicated based on rules
     rule_pred = add_rule_predicates(obj_data, pred, create_rules)
     # select correct predicated
-    pred_sel = select_predicates(obj_data, pred + rule_pred, 1, 3)
+    pred_sel = select_predicates(obj_data, pred + rule_pred, 1, 1)
     # generate description from selected predicated
     description = get_description(create_bound_boxes, pred_sel, create_prop, create_rels, create_rules)
     return description
@@ -120,7 +120,8 @@ def get_properties(ob_data, prop):
     max = 1
     # property number
     for prop_idx in range(len(prop)):
-        trapezoid_membership_function_val = tmf(get_mfarg(ob_data, prop[prop_idx], 0, 0), prop[prop_idx].ftype, prop[prop_idx].fthr)
+        trapezoid_membership_function_val = tmf(get_mfarg(ob_data, prop[prop_idx], 0, 0), prop[prop_idx].ftype,
+                                                prop[prop_idx].fthr)
         if len(trapezoid_membership_function_val) > max:
             max = len(trapezoid_membership_function_val)
         if len(trapezoid_membership_function_val) < max:
@@ -141,29 +142,35 @@ def get_predicates(obj_data, prop, rel):
     # generate predicates
     counterA = 0
     counterB = 0
-    pred = []
+    predicates = []
     # iterate over object reference number
     for box_idx_main in range(obj_data.number_of_b_boxes):
         # properties
         for prop_idx in range(len(prop)):
             # values of membership fuction
             if obj_prop[prop_idx][box_idx_main] > 0:
-                temp = []
-                # predicate id from property
-                temp.append(prop[prop_idx].id)
-                # confidence factor
-                temp.append(obj_prop[prop_idx][box_idx_main] * sal[box_idx_main] * prop[prop_idx].psal)
-                # usage pointer
-                temp.append(0)
-                # number of referencje object
-                temp.append(box_idx_main)
-                # not use with properties
-                temp.append(-1)
-                # property number
-                temp.append(prop_idx)
-                # used in rules
-                temp.append(obj_prop[prop_idx][box_idx_main])
-                pred.append(temp)
+                # temp = []
+                # # predicate id from property
+                # temp.append(prop[prop_idx].id)
+                # # confidence factor
+                # temp.append(obj_prop[prop_idx][box_idx_main] * sal[box_idx_main] * prop[prop_idx].psal)
+                # # usage pointer
+                # temp.append(0)
+                # # number of referencje object
+                # temp.append(box_idx_main)
+                # # not use with properties
+                # temp.append(-1)
+                # # property number
+                # temp.append(prop_idx)
+                # # used in rules
+                # temp.append(obj_prop[prop_idx][box_idx_main])
+                confidence_factor = obj_prop[prop_idx][box_idx_main] * sal[box_idx_main] * prop[prop_idx].psal
+                used_in_rules = obj_prop[prop_idx][box_idx_main]
+                pred = Pred(predicate_id=prop[prop_idx].id,
+                            confidence_factor=confidence_factor,
+                            usage_pointer=0, number_of_reference_object=box_idx_main, number_of_sec_obj_for_relation=-1,
+                            property_rule_or_rel_number=prop_idx, used_in_rules=used_in_rules)
+                predicates.append(pred)
                 counterA += 1
         # realtions
         # iterate over objects, which  i objects is in relation
@@ -171,25 +178,32 @@ def get_predicates(obj_data, prop, rel):
             # iterate over relation number
             for rel_idx in range(len(rel)):
                 if obj_rel[rel_idx, box_idx_main, box_idx] > 0:
-                    temp = []
-                    # predicate id from relation
-                    temp.append(rel[rel_idx].id)
-                    # confidence factor
-                    temp.append(obj_rel[rel_idx, box_idx_main, box_idx] * sal[box_idx_main] * rel[rel_idx].psal)
-                    # usage pointer
-                    temp.append(0)
-                    # number of referencje object
-                    temp.append(box_idx_main)
-                    # number of second object from relation
-                    temp.append(box_idx)
-                    # relation number
-                    temp.append(rel_idx)
-                    # used in rules
-                    temp.append(obj_rel[rel_idx, box_idx_main, box_idx])
-                    pred.append(temp)
+                    # temp = []
+                    # # predicate id from relation
+                    # temp.append(rel[rel_idx].id)
+                    # # confidence factor
+                    # temp.append(obj_rel[rel_idx, box_idx_main, box_idx] * sal[box_idx_main] * rel[rel_idx].psal)
+                    # # usage pointer
+                    # temp.append(0)
+                    # # number of referencje object
+                    # temp.append(box_idx_main)
+                    # # number of second object from relation
+                    # temp.append(box_idx)
+                    # # relation number
+                    # temp.append(rel_idx)
+                    # # used in rules
+                    # temp.append(obj_rel[rel_idx, box_idx_main, box_idx])
+                    confidence_factor = obj_rel[rel_idx, box_idx_main, box_idx] * sal[box_idx_main] * rel[rel_idx].psal
+                    used_in_rules = obj_rel[rel_idx, box_idx_main, box_idx]
+                    pred = Pred(predicate_id=rel[rel_idx].id,
+                                confidence_factor=confidence_factor,
+                                usage_pointer=0, number_of_reference_object=box_idx_main,
+                                number_of_sec_obj_for_relation=box_idx,
+                                property_rule_or_rel_number=rel_idx, used_in_rules=used_in_rules)
+                    predicates.append(pred)
                     counterB = counterB + 1
 
-    return pred
+    return predicates
 
 
 # generate values od fuzzy descriptors position per relations
@@ -200,50 +214,63 @@ def get_relations(ob_data, rel):
     for rel_idx in range(len(rel)):
         for box_idx in range(ob_data.number_of_b_boxes):
             for box_idx_sec_loop in range(ob_data.number_of_b_boxes):
-                temp = tmf(get_mfarg(ob_data, rel[rel_idx], box_idx, box_idx_sec_loop), rel[rel_idx].ftype, rel[rel_idx].fthr)
+                temp = tmf(get_mfarg(ob_data, rel[rel_idx], box_idx, box_idx_sec_loop), rel[rel_idx].ftype,
+                           rel[rel_idx].fthr)
                 obj_rel[rel_idx, box_idx, box_idx_sec_loop] = temp[0]
     return obj_rel
 
 
 #  add predicates  from rules - inference
-def add_rule_predicates(obj_data, pred, rule):
+def add_rule_predicates(obj_data, predicates, rule):
     # saliency of objects proportional to relative length
     sal = obj_data.size
     counter = 0
-    rule_pred = []
+    rule_predicates = []
     # iterate over rules
     for rule_idx in range(len(rule)):
         # iterate over predicates
-        for pred_idx in range(len(pred)):
+        for pred_idx in range(len(predicates)):
             # found predicate with first premise
-            if (pred[pred_idx][0] == rule[rule_idx].id_first):
+            if (predicates[pred_idx].predicate_id == rule[rule_idx].id_first):
                 # save object number
-                obj_found = pred[pred_idx][3]
+                obj_found = predicates[pred_idx].number_of_reference_object
                 # iterate over predicates - look for second premise
-                for pred_second_premise_idx in range(len(pred)):
-                    if ((pred[pred_second_premise_idx][0] == rule[rule_idx].id_second) and (pred[pred_second_premise_idx][3] == obj_found)):
+                for pred_second_premise_idx in range(len(predicates)):
+                    if ((predicates[pred_second_premise_idx].predicate_id == rule[rule_idx].id_second) and (
+                            predicates[pred_second_premise_idx].number_of_reference_object == obj_found)):
                         # second second premise for the same object
-                        if ((pred[pred_idx][6] != 0) and (pred[pred_second_premise_idx][6] != 0)):
-                            # if is not equal to 0, calculates new predicate
-                            ruleobj_cf = combine_mf(pred[pred_idx][6], pred[pred_second_premise_idx][6], rule[rule_idx].operator)
-                            temp = []
-                            # predicate id from rules
-                            temp.append(rule[rule_idx].id)
-                            # confidence factor
-                            temp.append(ruleobj_cf * sal[obj_found] * rule[rule_idx].psal)
-                            # usage pointer
-                            temp.append(0)
-                            # object number
-                            temp.append(obj_found)
-                            # lack of second object(rule)
-                            temp.append(-2)
-                            # rule number
-                            temp.append(rule_idx)
-                            #
-                            temp.append(ruleobj_cf)
-                            rule_pred.append(temp)
+                        if ((predicates[pred_idx].used_in_rules != 0) and (
+                                predicates[pred_second_premise_idx].used_in_rules != 0)):
+                            # # if is not equal to 0, calculates new predicate
+                            # ruleobj_cf = combine_mf(pred[pred_idx].used_in_rules, pred[pred_second_premise_idx].used_in_rules,
+                            #                         rule[rule_idx].operator)
+                            # temp = []
+                            # # predicate id from rules
+                            # temp.append(rule[rule_idx].id)
+                            # # confidence factor
+                            # temp.append(ruleobj_cf * sal[obj_found] * rule[rule_idx].psal)
+                            # # usage pointer
+                            # temp.append(0)
+                            # # object number
+                            # temp.append(obj_found)
+                            # # lack of second object(rule)
+                            # temp.append(-2)
+                            # # rule number
+                            # temp.append(rule_idx)
+                            # #
+                            # temp.append(ruleobj_cf)
+                            ruleobj_cf = combine_mf(predicates[pred_idx].used_in_rules,
+                                                    predicates[pred_second_premise_idx].used_in_rules,
+                                                    rule[rule_idx].operator)
+                            confidence_factor = ruleobj_cf * sal[obj_found] * rule[rule_idx].psal
+                            rule_pred = Pred(predicate_id=rule[rule_idx].id,
+                                             confidence_factor=confidence_factor,
+                                             usage_pointer=0, number_of_reference_object=obj_found,
+                                             number_of_sec_obj_for_relation=-2,
+                                             property_rule_or_rel_number=rule_idx, used_in_rules=ruleobj_cf)
+                            rule_predicates.append(rule_pred)
                             counter = counter + 1
-    return rule_pred
+    return rule_predicates
 
 
 # cobination of two values of membership function(used in rules)
@@ -260,55 +287,84 @@ def combine_mf(val1, val2, type):
 
 # select most important predicates
 # num_times - how often object is mentioned in the text
-def select_predicates(obj_data, pred, num_times_coordinate_x, num_times_coordinate_y):
+def select_predicates(obj_data, predicates, num_times_coordinate_x, num_times_coordinate_y):
     # sort by certainty factor of predicate
     def myFunc(e):
-        return e[1]
+        return e.confidence_factor
 
-    pred.sort(key=myFunc, reverse=True)
+    predicates.sort(key=myFunc, reverse=True)
     # select most improtant predicates
     used = numpy.zeros((obj_data.number_of_b_boxes))
-    for pred_idx in range(len(pred)):
+    for pred_idx in range(len(predicates)):
         # properties or rules
-        if pred[pred_idx][4] < 0:
-            if used[pred[pred_idx][3]] < num_times_coordinate_y:
-                used[pred[pred_idx][3]] = used[pred[pred_idx][3]] + 1
-                pred[pred_idx][2] = 1
+        if predicates[pred_idx].number_of_sec_obj_for_relation < 0:
+            if used[predicates[pred_idx].number_of_reference_object] < num_times_coordinate_y:
+                used[predicates[pred_idx].number_of_reference_object] = used[predicates[
+                    pred_idx].number_of_reference_object] + 1
+                predicates[pred_idx].usage_pointer = 1
         # pred(i,5) > 0 -> relation
         else:
             # second object in relation should used previously
-            if (used[pred[pred_idx][3]] < num_times_coordinate_y) & (used[pred[pred_idx][3]] == 1):
-                used[pred[pred_idx][3]] = used[pred[pred_idx][3]] + 1
-                pred[pred_idx][2] = 1
-    A = pd.DataFrame(numpy.array(pred))
+            if (used[predicates[pred_idx].number_of_reference_object] < num_times_coordinate_y) & (
+                    used[predicates[pred_idx].number_of_reference_object] == 1):
+                used[predicates[pred_idx].number_of_reference_object] = used[predicates[
+                    pred_idx].number_of_reference_object] + 1
+                predicates[pred_idx].usage_pointer = 1
 
-    # reduce predicate matrix to the most important ones
-    def most_important_predicates_filter():
-        t = A[1].apply(lambda x: True if x > 0 else False)
-        c = A[2].apply(lambda x: True if x == 1 else False)
+    # A = pd.DataFrame(numpy.array(pred))
+    #
+    # # reduce predicate matrix to the most important ones
+    # def most_important_predicates_filter():
+    #     t = A[1].apply(lambda x: True if x > 0 else False)
+    #     c = A[2].apply(lambda x: True if x == 1 else False)
+    #     filter = numpy.logical_and(t, c)
+    #     return filter
+    #
+    # pred_out = A[most_important_predicates_filter()]
+    def most_important_predicates_filter(pred):
+        t = None
+        if pred.confidence_factor > 0:
+            t = True
+        else:
+            t = False
+
+        c = None
+        if pred.usage_pointer == 1:
+            c = True
+        else:
+            c = False
         filter = numpy.logical_and(t, c)
         return filter
 
-    pred_out = A[most_important_predicates_filter()]
-    return pred_out.to_numpy()
+    pred_out = filter(most_important_predicates_filter, predicates)
+    return list(pred_out)
 
 
 # generate decription from the matrix with most important predicates
-def get_description(obj, pred, prop, rel, rule):
+def get_description(obj, predicates, prop, rel, rule):
     desc = []
-    for pred_idx in range(len(pred)):
+    for pred_idx in range(len(predicates)):
         # property
-        if (pred[pred_idx][4] == -1):
-            zdanie = prop[pred[pred_idx][5]].text[0] + obj[int(pred[pred_idx][3])].name + prop[pred[pred_idx][5]].text[1]
+        if (predicates[pred_idx].number_of_sec_obj_for_relation == -1):
+            zdanie = prop[predicates[pred_idx].property_rule_or_rel_number].text[0] + obj[
+                int(predicates[pred_idx].number_of_reference_object)].name + \
+                     prop[predicates[pred_idx].property_rule_or_rel_number].text[
+                         1]
             desc.append(zdanie)
-        elif (pred[pred_idx][4] == -2):
-            zdanie = rule[pred[pred_idx][5]].text[0] + obj[int(pred[pred_idx][3])].name + rule[pred[pred_idx][5]].text[1]
+        elif (predicates[pred_idx].number_of_sec_obj_for_relation == -2):
+            zdanie = rule[predicates[pred_idx].property_rule_or_rel_number].text[0] + obj[
+                int(predicates[pred_idx].number_of_reference_object)].name + \
+                     rule[predicates[pred_idx].property_rule_or_rel_number].text[
+                         1]
             desc.append(zdanie)
         # relation
         else:
-            zdanie = rel[pred[pred_idx][5]].text[0] + obj[int(pred[pred_idx][3])].name + rel[pred[pred_idx][5]].text[1] + obj[
-                pred(pred_idx, 5)].name, \
-                     rel[pred[pred_idx][5]].text[2]
+            zdanie = rel[predicates[pred_idx].property_rule_or_rel_number].text[0] + obj[
+                int(predicates[pred_idx].number_of_reference_object)].name + \
+                     rel[predicates[pred_idx].property_rule_or_rel_number].text[
+                         1] + obj[
+                         predicates(pred_idx, 5)].name, \
+                     rel[predicates[pred_idx].property_rule_or_rel_number].text[2]
             desc.append(zdanie)
     return desc
 
