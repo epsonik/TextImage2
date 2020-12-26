@@ -120,13 +120,13 @@ def get_properties(ob_data, prop):
     max = 1
     # property number
     for prop_idx in range(len(prop)):
-        a = tmf(get_mfarg(ob_data, prop[prop_idx], 0, 0), prop[prop_idx].ftype, prop[prop_idx].fthr)
-        if len(a) > max:
-            max = len(a)
-        if len(a) < max:
-            obj_prop.append(a * max)
+        trapezoid_membership_function_val = tmf(get_mfarg(ob_data, prop[prop_idx], 0, 0), prop[prop_idx].ftype, prop[prop_idx].fthr)
+        if len(trapezoid_membership_function_val) > max:
+            max = len(trapezoid_membership_function_val)
+        if len(trapezoid_membership_function_val) < max:
+            obj_prop.append(trapezoid_membership_function_val * max)
         else:
-            obj_prop.append(a)
+            obj_prop.append(trapezoid_membership_function_val)
     return obj_prop
 
 
