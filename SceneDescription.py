@@ -97,17 +97,17 @@ def tmf(in_arg, ftype, fval):
     import copy
     out = copy.copy(in_arg)
     if ftype == 'trapezoid':
-        for i in range(len(in_arg)):
-            if (in_arg[i] < fval[0]):
-                out[i] = 0
-            elif (in_arg[i] < fval[1]):
-                out[i] = (in_arg[i] - fval[0]) / (fval[1] - fval[0])
-            elif (in_arg[i] < fval[2]):
-                out[i] = 1
-            elif (in_arg[i] < fval[3]):
-                out[i] = (fval[3] - in_arg[i]) / (fval[3] - fval[2])
+        for trapeze_param_idx in range(len(in_arg)):
+            if (in_arg[trapeze_param_idx] < fval[0]):
+                out[trapeze_param_idx] = 0
+            elif (in_arg[trapeze_param_idx] < fval[1]):
+                out[trapeze_param_idx] = (in_arg[trapeze_param_idx] - fval[0]) / (fval[1] - fval[0])
+            elif (in_arg[trapeze_param_idx] < fval[2]):
+                out[trapeze_param_idx] = 1
+            elif (in_arg[trapeze_param_idx] < fval[3]):
+                out[trapeze_param_idx] = (fval[3] - in_arg[trapeze_param_idx]) / (fval[3] - fval[2])
             else:
-                out[i] = 0
+                out[trapeze_param_idx] = 0
     else:
         print('wrong membership function type')
     return out
