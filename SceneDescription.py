@@ -268,18 +268,18 @@ def select_predicates(obj_data, pred, num_times_coordinate_x, num_times_coordina
     pred.sort(key=myFunc, reverse=True)
     # select most improtant predicates
     used = numpy.zeros((obj_data.number_of_b_boxes))
-    for i in range(len(pred)):
+    for pred_idx in range(len(pred)):
         # properties or rules
-        if pred[i][4] < 0:
-            if used[pred[i][3]] < num_times_coordinate_y:
-                used[pred[i][3]] = used[pred[i][3]] + 1
-                pred[i][2] = 1
+        if pred[pred_idx][4] < 0:
+            if used[pred[pred_idx][3]] < num_times_coordinate_y:
+                used[pred[pred_idx][3]] = used[pred[pred_idx][3]] + 1
+                pred[pred_idx][2] = 1
         # pred(i,5) > 0 -> relation
         else:
             # second object in relation should used previously
-            if (used[pred[i][3]] < num_times_coordinate_y) & (used[pred[i][3]] == 1):
-                used[pred[i][3]] = used[pred[i][3]] + 1
-                pred[i][2] = 1
+            if (used[pred[pred_idx][3]] < num_times_coordinate_y) & (used[pred[pred_idx][3]] == 1):
+                used[pred[pred_idx][3]] = used[pred[pred_idx][3]] + 1
+                pred[pred_idx][2] = 1
     A = pd.DataFrame(numpy.array(pred))
 
     # reduce predicate matrix to the most important ones
