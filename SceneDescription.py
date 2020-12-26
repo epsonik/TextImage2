@@ -119,8 +119,8 @@ def get_properties(ob_data, prop):
     obj_prop = []
     max = 1
     # property number
-    for i in range(len(prop)):
-        a = tmf(get_mfarg(ob_data, prop[i], 0, 0), prop[i].ftype, prop[i].fthr)
+    for prop_idx in range(len(prop)):
+        a = tmf(get_mfarg(ob_data, prop[prop_idx], 0, 0), prop[prop_idx].ftype, prop[prop_idx].fthr)
         if len(a) > max:
             max = len(a)
         if len(a) < max:
@@ -197,11 +197,11 @@ def get_relations(ob_data, rel):
     import numpy
     obj_rel = numpy.ones((len(rel), ob_data.number_of_b_boxes, ob_data.number_of_b_boxes))
 
-    for k in range(len(rel)):
-        for i in range(ob_data.number_of_b_boxes):
-            for j in range(ob_data.number_of_b_boxes):
-                temp = tmf(get_mfarg(ob_data, rel[k], i, j), rel[k].ftype, rel[k].fthr)
-                obj_rel[k, i, j] = temp[0]
+    for rel_idx in range(len(rel)):
+        for box_idx in range(ob_data.number_of_b_boxes):
+            for box_idx_sec_loop in range(ob_data.number_of_b_boxes):
+                temp = tmf(get_mfarg(ob_data, rel[rel_idx], box_idx, box_idx_sec_loop), rel[rel_idx].ftype, rel[rel_idx].fthr)
+                obj_rel[rel_idx, box_idx, box_idx_sec_loop] = temp[0]
     return obj_rel
 
 
