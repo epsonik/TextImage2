@@ -34,15 +34,15 @@ def get_relpos(obj, field_size):
     down = []
     vert_len = []
     size = []
-    for i in range(number_of_b_boxes):
+    for box_idx in range(number_of_b_boxes):
         # check if object left position trend is 1 not -1
-        left.append(2 * obj[i].pos[1] / field_size[1] - 1)
-        right.append(2 * (obj[i].pos[1] + obj[i].length[1]) / field_size[1] - 1)
-        horiz_len.append(obj[i].length[1] / field_size[1])
-        up.append(2 * obj[i].pos[0] / field_size[0] - 1)
-        down.append(2 * (obj[i].pos[0] + obj[i].length[0]) / field_size[1] - 1)
-        vert_len.append(obj[i].length[0] / field_size[0])
-        size.append(horiz_len[i] * vert_len[i])
+        left.append(2 * obj[box_idx].pos[1] / field_size[1] - 1)
+        right.append(2 * (obj[box_idx].pos[1] + obj[box_idx].length[1]) / field_size[1] - 1)
+        horiz_len.append(obj[box_idx].length[1] / field_size[1])
+        up.append(2 * obj[box_idx].pos[0] / field_size[0] - 1)
+        down.append(2 * (obj[box_idx].pos[0] + obj[box_idx].length[0]) / field_size[1] - 1)
+        vert_len.append(obj[box_idx].length[0] / field_size[0])
+        size.append(horiz_len[box_idx] * vert_len[box_idx])
     obj_data = ObjData(number_of_b_boxes, left, right, horiz_len, up, down, vert_len, size)
 
     return obj_data
