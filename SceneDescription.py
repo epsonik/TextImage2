@@ -4,11 +4,10 @@ from math import sqrt
 import numpy
 
 from DrawField import draw_field
-from InputData import input_data
+from InputData import input_data, create_prop, create_rules
 from Obj import ObjData
 # generate description
 from Pred import Pred
-from Prop import CoordinateName
 
 RULE = -2
 
@@ -244,6 +243,9 @@ def combine_mf(val1, val2, type):
 # select most important predicates
 # num_times - how often object is mentioned in the text
 def select_predicates(obj_data, predicates, num_times_coordinate_x, num_times_coordinate_y):
+    predicates = set_coordinates(predicates)
+    coordinates_groups_dict = group_coordinates(predicates)
+
     # sort by certainty factor of predicate
     def myFunc(e):
         return e.confidence_factor
@@ -265,12 +267,6 @@ def select_predicates(obj_data, predicates, num_times_coordinate_x, num_times_co
                 used[predicates[pred_idx].number_of_reference_object] += 1
                 predicates[pred_idx].usage_pointer = 1
         # pred(i,5) > 0 -> relation
-        else:
-            # second object in relation should used previously
-            if (used[predicates[pred_idx].number_of_reference_object] < num_times_coordinate_y) & (
-                    used[predicates[pred_idx].number_of_reference_object] == 1):
-                used[predicates[pred_idx].number_of_reference_object] += 1
-                predicates[pred_idx].usage_pointer = 1
 
     def most_important_predicates_filter(pred):
         t = False
@@ -313,21 +309,37 @@ def get_description(obj, predicates, prop, rel, rule):
     return desc
 
 
+def group_coordinates(predicates):
+    from collections import defaultdict
+
+    groups = defaultdict(list)
+
+    for obj in predicates:
+        groups[obj.coordinate_name].append(obj)
+
+    def myFunc(e):
+        return e.confidence_factor
+
+    for _, predicates_for_coordinate in groups.items():
+        predicates_for_coordinate.sort(key=myFunc, reverse=True)
+
+    return groups.values()
+
+
 # generate decription from the matrix with most important predicates
-def count_coordinates(predicates, prop, rule, pred_idx):
-    x = 0
-    y = 0
-    if predicates[pred_idx].number_of_sec_obj_for_relation == PROPERTY:
-        if prop[predicates[pred_idx].property_rule_or_rel_number].coordinate_name == CoordinateName.X:
-            x += 1
-        elif prop[predicates[pred_idx].property_rule_or_rel_number].coordinate_name == CoordinateName.Y:
-            y += 1
-    if predicates[pred_idx].number_of_sec_obj_for_relation == RULE:
-        if rule[predicates[pred_idx].property_rule_or_rel_number].coordinate_name == CoordinateName.X:
-            x += 1
-        elif rule[predicates[pred_idx].property_rule_or_rel_number].coordinate_name == CoordinateName.Y:
-            y += 1
-    return x, y
+def set_coordinates(predicates):
+    prop = create_prop()
+    rule = create_rules()
+
+    def get_coordinate(predicates, prop, rule, pred_idx):
+        if predicates[pred_idx].number_of_sec_obj_for_relation == PROPERTY:
+            return prop[predicates[pred_idx].property_rule_or_rel_number].coordinate_name
+        if predicates[pred_idx].number_of_sec_obj_for_relation == RULE:
+            return rule[predicates[pred_idx].property_rule_or_rel_number].coordinate_name
+
+    for pred_idx in range(len(predicates)):
+        predicates[pred_idx].coordinate_name = get_coordinate(predicates, prop, rule, pred_idx)
+    return predicates
 
 
 # plot image
