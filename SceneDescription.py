@@ -24,8 +24,7 @@ def scene_description(create_bound_boxes, create_prop, create_rels, create_rules
     rule_pred = add_rule_predicates(obj_data, pred, create_rules)
     # select correct predicated
     predicates = pred + rule_pred
-    pred_sel = select_predicates(obj_data, predicates, 1, 1)
-    count_coordinates(predicates, create_prop)
+    pred_sel = select_predicates(obj_data, predicates, 1, 3)
     # generate description from selected predicated
     description = get_description(create_bound_boxes, pred_sel, create_prop, create_rels, create_rules)
     return description
@@ -173,7 +172,7 @@ def get_predicates(obj_data, prop, rel):
                 used_in_rules = obj_prop[prop_idx][box_idx_main]
                 pred = Pred(predicate_id=prop[prop_idx].id,
                             confidence_factor=confidence_factor,
-                            usage_pointer=0, number_of_reference_object=box_idx_main,
+                            number_of_reference_object=box_idx_main,
                             number_of_sec_obj_for_relation=PROPERTY,
                             property_rule_or_rel_number=prop_idx, used_in_rules=used_in_rules)
                 predicates.append(pred)
@@ -202,7 +201,7 @@ def get_predicates(obj_data, prop, rel):
                     used_in_rules = obj_rel[rel_idx, box_idx_main, box_idx]
                     pred = Pred(predicate_id=rel[rel_idx].id,
                                 confidence_factor=confidence_factor,
-                                usage_pointer=0, number_of_reference_object=box_idx_main,
+                                number_of_reference_object=box_idx_main,
                                 number_of_sec_obj_for_relation=box_idx,
                                 property_rule_or_rel_number=rel_idx, used_in_rules=used_in_rules)
                     predicates.append(pred)
@@ -269,7 +268,7 @@ def add_rule_predicates(obj_data, predicates, rule):
                             confidence_factor = ruleobj_cf * sal[obj_found] * rule[rule_idx].psal
                             rule_pred = Pred(predicate_id=rule[rule_idx].id,
                                              confidence_factor=confidence_factor,
-                                             usage_pointer=0, number_of_reference_object=obj_found,
+                                             number_of_reference_object=obj_found,
                                              number_of_sec_obj_for_relation=RULE,
                                              property_rule_or_rel_number=rule_idx, used_in_rules=ruleobj_cf)
                             rule_predicates.append(rule_pred)
@@ -299,6 +298,13 @@ def select_predicates(obj_data, predicates, num_times_coordinate_x, num_times_co
     predicates.sort(key=myFunc, reverse=True)
     # select most improtant predicates
     used = numpy.zeros((obj_data.number_of_b_boxes))
+
+    def get_usage_num_times_of_predicate_x(used, predicates, pred_idx):
+        return used[0, predicates[pred_idx].number_of_reference_object]
+
+    def get_usage_num_times_of_predicate_y(used, predicates, pred_idx):
+        return used[1, predicates[pred_idx].number_of_reference_object]
+
     for pred_idx in range(len(predicates)):
         # properties or rules
         if predicates[pred_idx].number_of_sec_obj_for_relation < 0:
@@ -372,16 +378,19 @@ def get_description(obj, predicates, prop, rel, rule):
 
 
 # generate decription from the matrix with most important predicates
-def count_coordinates(predicates, prop):
+def count_coordinates(predicates, prop, rule, pred_idx):
     x = 0
     y = 0
-    for pred_idx in range(len(predicates)):
-        if (predicates[pred_idx].number_of_sec_obj_for_relation == PROPERTY or
-                predicates[pred_idx].number_of_sec_obj_for_relation == RULE):
-            if prop[predicates[pred_idx].property_rule_or_rel_number].coordinate_name == CoordinateName.X:
-                x += 1
-            elif prop[predicates[pred_idx].property_rule_or_rel_number].coordinate_name == CoordinateName.Y:
-                y += 1
+    if predicates[pred_idx].number_of_sec_obj_for_relation == PROPERTY:
+        if prop[predicates[pred_idx].property_rule_or_rel_number].coordinate_name == CoordinateName.X:
+            x += 1
+        elif prop[predicates[pred_idx].property_rule_or_rel_number].coordinate_name == CoordinateName.Y:
+            y += 1
+    if predicates[pred_idx].number_of_sec_obj_for_relation == RULE:
+        if rule[predicates[pred_idx].property_rule_or_rel_number].coordinate_name == CoordinateName.X:
+            x += 1
+        elif rule[predicates[pred_idx].property_rule_or_rel_number].coordinate_name == CoordinateName.Y:
+            y += 1
     return x, y
 
 
