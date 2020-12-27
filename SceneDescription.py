@@ -1,4 +1,5 @@
 import statistics
+from collections import defaultdict
 from math import sqrt
 
 import numpy
@@ -24,7 +25,7 @@ def scene_description(create_bound_boxes, create_prop, create_rels, create_rules
     rule_pred = add_rule_predicates(obj_data, pred, create_rules)
     # select correct predicated
     predicates = pred + rule_pred
-    pred_sel = select_predicates(obj_data, predicates, 1, 2)
+    pred_sel = select_predicates(predicates, 1, 2)
     # generate description from selected predicated
     description = get_description(create_bound_boxes, pred_sel, create_prop, create_rels, create_rules)
     return description
@@ -267,27 +268,34 @@ def select_predicates(predicates, num_times_coordinate_x, num_times_coordinate_y
 
     predicates = set_coordinates(predicates)
 
-    def group_coordinates(predicates):
-        from collections import defaultdict
+    def group_coordinates(predicates_for_obj):
+        coordinates_groups = defaultdict(list)
+        for pred in predicates_for_obj:
+            coordinates_groups[pred.coordinate_name].append(pred)
 
-        groups = defaultdict(list)
+        def sort_predicates_by_confidence_factor(predicates_for_coordinate):
+            def myFunc(e):
+                return e.confidence_factor
 
-        for obj in predicates:
-            groups[obj.coordinate_name].append(obj)
-
-        def myFunc(e):
-            return e.confidence_factor
-
-        for _, predicates_for_coordinate in groups.items():
             predicates_for_coordinate.sort(key=myFunc, reverse=True)
 
+        for _, predicates_for_coordinate in coordinates_groups.items():
+            sort_predicates_by_confidence_factor(predicates_for_coordinate)
+        return coordinates_groups[CoordinateName.X][:num_times_coordinate_x] + \
+               coordinates_groups[CoordinateName.Y][:num_times_coordinate_y]
+
+    def group_by_obj(predicates):
+        groups = defaultdict(list)
+        for pred in predicates:
+            groups[pred.number_of_reference_object].append(pred)
         return groups
 
-    coordinates_groups_dict = group_coordinates(predicates)
-    coordinate_x = coordinates_groups_dict[CoordinateName.X][:num_times_coordinate_x]
-    coordinate_y = coordinates_groups_dict[CoordinateName.Y][:num_times_coordinate_y]
+    obj_groups_dict = group_by_obj(predicates)
+    final_predicates=list()
+    for obj, predicates_for_obj in obj_groups_dict.items():
+        final_predicates += group_coordinates(predicates_for_obj)
 
-    return coordinate_x + coordinate_y
+    return final_predicates
 
 
 # generate decription from the matrix with most important predicates
