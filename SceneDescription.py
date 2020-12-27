@@ -273,19 +273,12 @@ def select_predicates(obj_data, predicates, num_times_coordinate_x, num_times_co
                 predicates[pred_idx].usage_pointer = 1
 
     def most_important_predicates_filter(pred):
-        t = None
-        if pred.confidence_factor > 0:
-            t = True
-        else:
-            t = False
-
-        c = None
-        if pred.usage_pointer == 1:
-            c = True
-        else:
-            c = False
-        filter = numpy.logical_and(t, c)
-        return filter
+        t = False
+        c = False
+        if pred.confidence_factor > 0: t = True
+        if pred.usage_pointer == 1: c = True
+        filter_mipf = numpy.logical_and(t, c)
+        return filter_mipf
 
     pred_out = filter(most_important_predicates_filter, predicates)
     return list(pred_out)
