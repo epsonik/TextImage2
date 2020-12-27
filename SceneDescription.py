@@ -153,21 +153,6 @@ def get_predicates(obj_data, prop, rel):
         for prop_idx in range(len(prop)):
             # values of membership fuction
             if obj_prop[prop_idx][box_idx_main] > 0:
-                # temp = []
-                # # predicate id from property
-                # temp.append(prop[prop_idx].id)
-                # # confidence factor
-                # temp.append(obj_prop[prop_idx][box_idx_main] * sal[box_idx_main] * prop[prop_idx].psal)
-                # # usage pointer
-                # temp.append(0)
-                # # number of referencje object
-                # temp.append(box_idx_main)
-                # # not use with properties
-                # temp.append(-1)
-                # # property number
-                # temp.append(prop_idx)
-                # # used in rules
-                # temp.append(obj_prop[prop_idx][box_idx_main])
                 confidence_factor = obj_prop[prop_idx][box_idx_main] * sal[box_idx_main] * prop[prop_idx].psal
                 used_in_rules = obj_prop[prop_idx][box_idx_main]
                 pred = Pred(predicate_id=prop[prop_idx].id,
