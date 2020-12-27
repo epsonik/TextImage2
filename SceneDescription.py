@@ -8,6 +8,7 @@ from InputData import input_data, create_prop, create_rules
 from Obj import ObjData
 # generate description
 from Pred import Pred
+from Prop import CoordinateName
 
 RULE = -2
 
@@ -23,7 +24,7 @@ def scene_description(create_bound_boxes, create_prop, create_rels, create_rules
     rule_pred = add_rule_predicates(obj_data, pred, create_rules)
     # select correct predicated
     predicates = pred + rule_pred
-    pred_sel = select_predicates(obj_data, predicates, 1, 3)
+    pred_sel = select_predicates(obj_data, predicates, 1, 2)
     # generate description from selected predicated
     description = get_description(create_bound_boxes, pred_sel, create_prop, create_rels, create_rules)
     return description
@@ -243,41 +244,83 @@ def combine_mf(val1, val2, type):
 # select most important predicates
 # num_times - how often object is mentioned in the text
 def select_predicates(obj_data, predicates, num_times_coordinate_x, num_times_coordinate_y):
+    def most_important_predicates_filter(pred):
+        t = False
+        if pred.confidence_factor > 0: t = True
+        return t
+
+    predicates = list(filter(most_important_predicates_filter, predicates))
     predicates = set_coordinates(predicates)
     coordinates_groups_dict = group_coordinates(predicates)
 
-    # sort by certainty factor of predicate
+    # # sort by certainty factor of predicate
+    # def myFunc(e):
+    #     return e.confidence_factor
+    #
+    # predicates.sort(key=myFunc, reverse=True)
+    # # select most improtant predicates
+    # used = numpy.zeros((obj_data.number_of_b_boxes))
+    #
+    # def get_usage_num_times_of_predicate_x(used, predicates, pred_idx):
+    #     return used[0, predicates[pred_idx].number_of_reference_object]
+    #
+    # def get_usage_num_times_of_predicate_y(used, predicates, pred_idx):
+    #     return used[1, predicates[pred_idx].number_of_reference_object]
+    #
+    # for pred_idx in range(len(predicates)):
+    #     # properties or rules
+    #     if predicates[pred_idx].number_of_sec_obj_for_relation < 0:
+    #         if used[predicates[pred_idx].number_of_reference_object] < num_times_coordinate_y:
+    #             used[predicates[pred_idx].number_of_reference_object] += 1
+    #             predicates[pred_idx].usage_pointer = 1
+    #     # pred(i,5) > 0 -> relation
+    #
+    # def most_important_predicates_filter(pred):
+    #     t = False
+    #     c = False
+    #     if pred.confidence_factor > 0: t = True
+    #     if pred.usage_pointer == 1: c = True
+    #     filter_mipf = numpy.logical_and(t, c)
+    #     return filter_mipf
+    #
+    # pred_out = filter(most_important_predicates_filter, predicates)
+    coordinate_x = coordinates_groups_dict[CoordinateName.X][:num_times_coordinate_x]
+    coordinate_y = coordinates_groups_dict[CoordinateName.Y][:num_times_coordinate_y]
+
+    return coordinate_x + coordinate_y
+
+
+def group_coordinates(predicates):
+    from collections import defaultdict
+
+    groups = defaultdict(list)
+
+    for obj in predicates:
+        groups[obj.coordinate_name].append(obj)
+
     def myFunc(e):
         return e.confidence_factor
 
-    predicates.sort(key=myFunc, reverse=True)
-    # select most improtant predicates
-    used = numpy.zeros((obj_data.number_of_b_boxes))
+    for _, predicates_for_coordinate in groups.items():
+        predicates_for_coordinate.sort(key=myFunc, reverse=True)
 
-    def get_usage_num_times_of_predicate_x(used, predicates, pred_idx):
-        return used[0, predicates[pred_idx].number_of_reference_object]
+    return groups
 
-    def get_usage_num_times_of_predicate_y(used, predicates, pred_idx):
-        return used[1, predicates[pred_idx].number_of_reference_object]
+
+# generate decription from the matrix with most important predicates
+def set_coordinates(predicates):
+    prop = create_prop()
+    rule = create_rules()
+
+    def get_coordinate(predicates, prop, rule, pred_idx):
+        if predicates[pred_idx].number_of_sec_obj_for_relation == PROPERTY:
+            return prop[predicates[pred_idx].property_rule_or_rel_number].coordinate_name
+        if predicates[pred_idx].number_of_sec_obj_for_relation == RULE:
+            return rule[predicates[pred_idx].property_rule_or_rel_number].coordinate_name
 
     for pred_idx in range(len(predicates)):
-        # properties or rules
-        if predicates[pred_idx].number_of_sec_obj_for_relation < 0:
-            if used[predicates[pred_idx].number_of_reference_object] < num_times_coordinate_y:
-                used[predicates[pred_idx].number_of_reference_object] += 1
-                predicates[pred_idx].usage_pointer = 1
-        # pred(i,5) > 0 -> relation
-
-    def most_important_predicates_filter(pred):
-        t = False
-        c = False
-        if pred.confidence_factor > 0: t = True
-        if pred.usage_pointer == 1: c = True
-        filter_mipf = numpy.logical_and(t, c)
-        return filter_mipf
-
-    pred_out = filter(most_important_predicates_filter, predicates)
-    return list(pred_out)
+        predicates[pred_idx].coordinate_name = get_coordinate(predicates, prop, rule, pred_idx)
+    return predicates
 
 
 # generate decription from the matrix with most important predicates
@@ -307,39 +350,6 @@ def get_description(obj, predicates, prop, rel, rule):
                      rel[predicates[pred_idx].property_rule_or_rel_number].text[2]
             desc.append(zdanie)
     return desc
-
-
-def group_coordinates(predicates):
-    from collections import defaultdict
-
-    groups = defaultdict(list)
-
-    for obj in predicates:
-        groups[obj.coordinate_name].append(obj)
-
-    def myFunc(e):
-        return e.confidence_factor
-
-    for _, predicates_for_coordinate in groups.items():
-        predicates_for_coordinate.sort(key=myFunc, reverse=True)
-
-    return groups.values()
-
-
-# generate decription from the matrix with most important predicates
-def set_coordinates(predicates):
-    prop = create_prop()
-    rule = create_rules()
-
-    def get_coordinate(predicates, prop, rule, pred_idx):
-        if predicates[pred_idx].number_of_sec_obj_for_relation == PROPERTY:
-            return prop[predicates[pred_idx].property_rule_or_rel_number].coordinate_name
-        if predicates[pred_idx].number_of_sec_obj_for_relation == RULE:
-            return rule[predicates[pred_idx].property_rule_or_rel_number].coordinate_name
-
-    for pred_idx in range(len(predicates)):
-        predicates[pred_idx].coordinate_name = get_coordinate(predicates, prop, rule, pred_idx)
-    return predicates
 
 
 # plot image
