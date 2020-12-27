@@ -182,21 +182,6 @@ def get_predicates(obj_data, prop, rel):
             # iterate over relation number
             for rel_idx in range(len(rel)):
                 if obj_rel[rel_idx, box_idx_main, box_idx] > 0:
-                    # temp = []
-                    # # predicate id from relation
-                    # temp.append(rel[rel_idx].id)
-                    # # confidence factor
-                    # temp.append(obj_rel[rel_idx, box_idx_main, box_idx] * sal[box_idx_main] * rel[rel_idx].psal)
-                    # # usage pointer
-                    # temp.append(0)
-                    # # number of referencje object
-                    # temp.append(box_idx_main)
-                    # # number of second object from relation
-                    # temp.append(box_idx)
-                    # # relation number
-                    # temp.append(rel_idx)
-                    # # used in rules
-                    # temp.append(obj_rel[rel_idx, box_idx_main, box_idx])
                     confidence_factor = obj_rel[rel_idx, box_idx_main, box_idx] * sal[box_idx_main] * rel[rel_idx].psal
                     used_in_rules = obj_rel[rel_idx, box_idx_main, box_idx]
                     pred = Pred(predicate_id=rel[rel_idx].id,
@@ -245,23 +230,6 @@ def add_rule_predicates(obj_data, predicates, rule):
                         if ((predicates[pred_idx].used_in_rules != 0) and (
                                 predicates[pred_second_premise_idx].used_in_rules != 0)):
                             # # if is not equal to 0, calculates new predicate
-                            # ruleobj_cf = combine_mf(pred[pred_idx].used_in_rules, pred[pred_second_premise_idx].used_in_rules,
-                            #                         rule[rule_idx].operator)
-                            # temp = []
-                            # # predicate id from rules
-                            # temp.append(rule[rule_idx].id)
-                            # # confidence factor
-                            # temp.append(ruleobj_cf * sal[obj_found] * rule[rule_idx].psal)
-                            # # usage pointer
-                            # temp.append(0)
-                            # # object number
-                            # temp.append(obj_found)
-                            # # lack of second object(rule)
-                            # temp.append(-2)
-                            # # rule number
-                            # temp.append(rule_idx)
-                            # #
-                            # temp.append(ruleobj_cf)
                             ruleobj_cf = combine_mf(predicates[pred_idx].used_in_rules,
                                                     predicates[pred_second_premise_idx].used_in_rules,
                                                     rule[rule_idx].operator)
@@ -319,16 +287,6 @@ def select_predicates(obj_data, predicates, num_times_coordinate_x, num_times_co
                 used[predicates[pred_idx].number_of_reference_object] += 1
                 predicates[pred_idx].usage_pointer = 1
 
-    # A = pd.DataFrame(numpy.array(pred))
-    #
-    # # reduce predicate matrix to the most important ones
-    # def most_important_predicates_filter():
-    #     t = A[1].apply(lambda x: True if x > 0 else False)
-    #     c = A[2].apply(lambda x: True if x == 1 else False)
-    #     filter = numpy.logical_and(t, c)
-    #     return filter
-    #
-    # pred_out = A[most_important_predicates_filter()]
     def most_important_predicates_filter(pred):
         t = None
         if pred.confidence_factor > 0:
