@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 from InputData import input_data, get_field_size
-from Intersection import change_to_width_len_format
+from Intersection import change_to_width_len_format, group_filter_name
 from Obj import Obj
 from SceneDescription import scene_description
 
@@ -54,7 +54,7 @@ def load_from_file(bound_boxes, readCSV, file_name):
 # # Prints in the console the variable as requested
 # print("The file name you entered is: ", file_name)
 os.chdir(r'test')
-file_name = "test1.csv"
+file_name = "groups.csv"
 v_boxes = []
 v_boxes_temp = []
 names_set = set()
@@ -65,7 +65,7 @@ with open(file_name) as csvfile:
             v_boxes_temp.append(box)
             name = box[0]
             names_set.add(name)
-# v_boxes_new = group_filter_name(names_set, v_boxes_temp)
+v_boxes_new = group_filter_name(names_set, v_boxes_temp)
 # v_boxes_temp = v_boxes_new
 for b_box in v_boxes_temp:
     name = b_box[0]

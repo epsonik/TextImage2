@@ -1,3 +1,6 @@
+import itertools
+
+
 def grouping(b_boxes_to_merge):
     XtopLeftList, YtopLeftList = list(), list()
     XbottomRightList, YbottomRightList = list(), list()
@@ -20,36 +23,41 @@ def group_filter_name(names_set: set, v_boxes_temp: list):
                 temp_name = box[0]
                 if temp_name == name:
                     groups[name].append(box)
+    else:
+        v_boxes_new = v_boxes_temp
     for key, value in groups.items():
         if len(value) > 1:
             v_boxes_new.append([key] + list(grouping(value)))
         else:
             v_boxes_new.append(value[0])
+    for key, value in groups.items():
+        if len(value) > 1:
+            print(intersection_measure(value[0], value[1]))
     return v_boxes_new
 
 
-def intersection_measure(v_boxes_temp: list, n=15):
-    intersection_list = []
-    for boxA in v_boxes_temp:
-        intersection_row = []
-        boxAadj = adj_width_height(boxA, n)
-        for boxB in v_boxes_temp:
-            intersection_over_union_val = intersection_over_union(boxA, boxB)
-            if intersection_over_union_val == 0:
-                boxBadj = adj_width_height(boxB, n)
-                intersection_over_union_val = intersection_over_union(boxAadj, boxBadj)
-            intersection_row.append(intersection_over_union_val)
-        intersection_list.append(intersection_row)
-    return intersection_list
+def intersection_measure(boxA, boxB, n=15, stop_condition=3):
+    intersection_over_union_val = _intersection_over_union(boxA, boxB)
+    if intersection_over_union_val > 0:
+        return intersection_over_union_val
+    boxAadj = boxA
+    boxBadj = boxB
+    for _ in itertools.repeat(None, stop_condition):
+        boxAadj = _adj_width_height(boxAadj, n)
+        boxBadj = _adj_width_height(boxBadj, n)
+        intersection_over_union_val = _intersection_over_union(boxAadj, boxBadj)
+        if intersection_over_union_val > 0:
+            return intersection_over_union_val
+    return intersection_over_union_val
 
 
-def adj_width_height(box, n):
+def _adj_width_height(box, n):
     XtopLeft, YtopLeft = int(box[1]), int(box[2])
     XbottomRight, YbottomRight = int(box[3]), int(box[4])
     return box[0], XtopLeft - n, YtopLeft - n, XbottomRight + n, YbottomRight + n
 
 
-def intersection_over_union(box1, box2):
+def _intersection_over_union(box1, box2):
     x1, y1, w1, h1 = change_to_width_len_format(box1)
     x2, y2, w2, h2 = change_to_width_len_format(box2)
     w_intersection = min(x1 + w1, x2 + w2) - max(x1, x2)
