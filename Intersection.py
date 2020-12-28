@@ -27,28 +27,46 @@ def group_filter_name(names_set: set, v_boxes_temp: list):
         v_boxes_new = v_boxes_temp
     for key, value in groups.items():
         if len(value) > 1:
-            v_boxes_new.append([key] + list(grouping(value)))
+            is_group(key, value, v_boxes_new)
         else:
             v_boxes_new.append(value[0])
     for key, value in groups.items():
         if len(value) > 1:
-            print(intersection_measure(value[0], value[1]))
+            print(intersection_matrix(value))
     return v_boxes_new
 
 
-def intersection_measure(boxA, boxB, n=15, stop_condition=3):
-    intersection_over_union_val = _intersection_over_union(boxA, boxB)
+def is_group(key, value, v_boxes_new):
+    intersection_over_union_val = _intersection_measure(value[0], value[1])
+    if intersection_over_union_val > 0:
+        return v_boxes_new.append([key] + list(grouping(value)))
+    v_boxes_new.append(value[0])
+    v_boxes_new.append(value[1])
+    return v_boxes_new
+
+def _intersection_measure(box_a, box_b, n=15, stop_condition=3):
+    intersection_over_union_val = _intersection_over_union(box_a, box_b)
     if intersection_over_union_val > 0:
         return intersection_over_union_val
-    boxAadj = boxA
-    boxBadj = boxB
+    box_a_adj = box_a
+    box_b_adj = box_b
     for _ in itertools.repeat(None, stop_condition):
-        boxAadj = _adj_width_height(boxAadj, n)
-        boxBadj = _adj_width_height(boxBadj, n)
-        intersection_over_union_val = _intersection_over_union(boxAadj, boxBadj)
+        box_a_adj = _adj_width_height(box_a_adj, n)
+        box_b_adj = _adj_width_height(box_b_adj, n)
+        intersection_over_union_val = _intersection_over_union(box_a_adj, box_b_adj)
         if intersection_over_union_val > 0:
             return intersection_over_union_val
     return intersection_over_union_val
+
+
+def intersection_matrix(b_boxes):
+    intersection_mtx = []
+    for boxA in b_boxes:
+        intersection_row = []
+        for boxB in b_boxes:
+            intersection_row.append(_intersection_measure(boxA, boxB))
+        intersection_mtx.append(intersection_row)
+    return intersection_mtx
 
 
 def _adj_width_height(box, n):

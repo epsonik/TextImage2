@@ -66,7 +66,7 @@ with open(file_name) as csvfile:
             name = box[0]
             names_set.add(name)
 v_boxes_new = group_filter_name(names_set, v_boxes_temp)
-# v_boxes_temp = v_boxes_new
+v_boxes_temp = v_boxes_new
 for b_box in v_boxes_temp:
     name = b_box[0]
     XtopLeft, YtopLeft, X_len, Y_len = change_to_width_len_format(b_box)
