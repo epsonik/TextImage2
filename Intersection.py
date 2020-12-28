@@ -40,6 +40,7 @@ def is_group(key, value, v_boxes_new):
     intersection_over_union_val = _intersection_measure(value[0], value[1])
     if intersection_over_union_val > 0:
         return v_boxes_new.append([key] + list(grouping(value)))
+    value[0][0]=value[0][0] +'_prim'
     v_boxes_new.append(value[0])
     v_boxes_new.append(value[1])
     return v_boxes_new
