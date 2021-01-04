@@ -1,5 +1,7 @@
 import itertools
 
+from graph import generate_groups
+
 
 def grouping(b_boxes_to_merge):
     XtopLeftList, YtopLeftList = list(), list()
@@ -30,20 +32,18 @@ def group_filter_name(names_set: set, v_boxes_temp: list):
             is_group(key, value, v_boxes_new)
         else:
             v_boxes_new.append(value[0])
-    for key, value in groups.items():
-        if len(value) > 1:
-            print(intersection_matrix(value))
     return v_boxes_new
 
 
 def is_group(key, value, v_boxes_new):
-    intersection_over_union_val = _intersection_measure(value[0], value[1])
-    if intersection_over_union_val > 0:
-        return v_boxes_new.append([key] + list(grouping(value)))
-    value[0][0]=value[0][0] +'_prim'
-    v_boxes_new.append(value[0])
-    v_boxes_new.append(value[1])
+    # intersection_over_union_val = _intersection_measure(value[0], value[1])
+    inter_mtx = generate_inter_matrix(value)
+    separated_groups_of_b_boxes = generate_groups(inter_mtx)
+    for group_idx, group in enumerate(separated_groups_of_b_boxes):
+        b_boxes_to_merge = [value[i] for i in group]
+        v_boxes_new.append([f'{key}_{group_idx}'] + list(grouping(b_boxes_to_merge)))
     return v_boxes_new
+
 
 def _intersection_measure(box_a, box_b, n=15, stop_condition=3):
     intersection_over_union_val = _intersection_over_union(box_a, box_b)
@@ -60,7 +60,7 @@ def _intersection_measure(box_a, box_b, n=15, stop_condition=3):
     return intersection_over_union_val
 
 
-def intersection_matrix(b_boxes):
+def generate_inter_matrix(b_boxes):
     intersection_mtx = []
     for boxA in b_boxes:
         intersection_row = []

@@ -54,7 +54,7 @@ def load_from_file(bound_boxes, readCSV, file_name):
 # # Prints in the console the variable as requested
 # print("The file name you entered is: ", file_name)
 os.chdir(r'test')
-file_name = "groups.csv"
+file_name = "interTest2.csv"
 v_boxes = []
 v_boxes_temp = []
 names_set = set()
