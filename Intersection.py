@@ -41,7 +41,7 @@ def is_group(key, value, v_boxes_new):
     separated_groups_of_b_boxes = generate_groups(inter_mtx)
     for group_idx, group in enumerate(separated_groups_of_b_boxes):
         b_boxes_to_merge = [value[i] for i in group]
-        v_boxes_new.append([f'grupa {group_idx} składająca się z {key}'] + list(grouping(b_boxes_to_merge)))
+        v_boxes_new.append([f'grupa {group_idx} skladajaca sie z {key}'] + list(grouping(b_boxes_to_merge)))
     return v_boxes_new
 
 
