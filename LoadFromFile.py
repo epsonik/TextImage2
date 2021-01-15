@@ -95,7 +95,7 @@ def prepare(v_boxes_n):
 # print("The file name you entered is: ", file_name)
 os.chdir(r'test')
 os.chdir(r'grouping_test')
-file_name = "COCO_train2014_000000360452grouping_test_10.csv"
+file_name = "COCO_train2014_000000393241grouping_test_9.csv"
 v_boxes_temp = []
 names_set = set()
 with open(file_name) as csvfile:
